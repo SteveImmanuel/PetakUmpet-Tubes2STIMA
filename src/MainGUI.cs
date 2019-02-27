@@ -7,6 +7,7 @@ Nama File   : MainGUI.cs
 Deskripsi   : Memanggil GUI utama (WiP)
 */
 using System;
+using System.IO;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace Tubes2Stima {
     public class F1 : Form {
         private Label title, map_label, command_label, from_map_title, from_command_title;
         private TextBox map_text, command_text, from_map_file, from_command_file;
-        private Button button1, button2, reset, closebtn;
+        private Button button1, button2, submit, reset, closebtn;
         
         //ctor (?)
         public F1() {
@@ -51,6 +52,7 @@ namespace Tubes2Stima {
             //map_text = text for map
             map_text = new TextBox();
             map_text.Text = "";
+            map_text.ReadOnly = true;
             map_text.Font = new Font ("Futura LT", 8);
             map_text.Size = new Size (200, 25);
             map_text.Location = new Point (50, 115);
@@ -74,6 +76,7 @@ namespace Tubes2Stima {
             //command_text = text for commands
             command_text = new TextBox();
             command_text.Text = "";
+            command_text.ReadOnly = true;
             command_text.Font = new Font ("Futura LT", 8);
             command_text.Size = new Size (200, 25);
             command_text.Location = new Point (50, 175);
@@ -87,13 +90,22 @@ namespace Tubes2Stima {
             button2.Location = new Point (255, 174);
             button2.Click += new System.EventHandler(this.AddCommand);
             this.Controls.Add(button2);
+            //submit = button to submit file name and print its file content in GUI
+            submit = new Button();
+            submit.Text = "Submit";
+            submit.Font = new Font ("Futura LT", 10);
+            submit.BackColor = Color.FromArgb(0, 255, 0);
+            submit.Size = new Size (100, 42);
+            submit.Location = new Point (355, 114);
+            submit.Click += new System.EventHandler(this.SubmissionBox);
+            this.Controls.Add(submit);
             //reset = button to reset map_text, command_text, from_map_file, and from_command_file
             reset = new Button();
             reset.Text = "Reset";
             reset.Font = new Font ("Futura LT", 10);
             reset.BackColor = Color.FromArgb(255, 0, 0);
-            reset.Size = new Size (100, 85);
-            reset.Location = new Point (355, 114);
+            reset.Size = new Size (100, 42);
+            reset.Location = new Point (355, 157);
             reset.Click += new System.EventHandler(this.ResetBox);
             this.Controls.Add(reset);
             //from_map_title = label above map file contents
@@ -142,18 +154,48 @@ namespace Tubes2Stima {
         }
 
         private void AddMap(object source, EventArgs e) {
-            int Vertexes = new int(); Graph G = new Graph();
-            this.from_map_file.Text = ""; //asumsi input benar
-            ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G);
-            this.from_map_file.Text += Vertexes;
-            for (int i = 0; i < G.getEdgeNum(); i++){
-                this.from_map_file.Text += "\r\n" + G.getEdge(i).getFrom() + " " + G.getEdge(i).getTo();
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            using (OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.InitialDirectory = "C:\\";
+                ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    this.map_text.Text = ofd.FileName;
+                }
             }
         }
 
         private void AddCommand(object source, EventArgs e) {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            using (OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.InitialDirectory = "C:\\";
+                ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    this.command_text.Text = ofd.FileName;   
+                }
+            }
+        }
+
+        private void SubmissionBox(object source, EventArgs e){
+            //map
+            int Vertexes = new int(); Graph G = new Graph();
+            this.from_map_file.Text = ""; //assume correct input everytime
+            ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G);
+            this.from_map_file.Text += Vertexes;
+            for (int i = 0; i < G.getEdgeNum(); i++){
+                this.from_map_file.Text += "\r\n" + G.getEdge(i).getFrom();
+                this.from_map_file.Text += " " + G.getEdge(i).getTo();
+            }
+            //command
             int comnum = new int(); List<Command> LC = new List<Command>();
-            this.from_command_file.Text = "";
+            this.from_command_file.Text = ""; //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
             this.from_command_file.Text += comnum;
             for (int i = 0; i < comnum; i++){
@@ -169,9 +211,12 @@ namespace Tubes2Stima {
             this.from_map_file.Text = "";
             this.from_command_file.Text = "";
         }
+
         private void Close_Click(object source, EventArgs e){
             Close();
         }
+
+        [STAThread]
         public static void Main(String[] args) {
             Application.Run(new F1());
         }
