@@ -37,7 +37,7 @@ namespace Tubes2Stima {
         }
     }
 
-    //List of Command - Graph
+    //List of Edge - Graph
     public class Graph {
         private int edgenum;
         private List<Edge> listOfEdge;
@@ -62,14 +62,15 @@ namespace Tubes2Stima {
         }
     }
 
+    //Ferdiant's Commands
     public class Command {
         private int approach, X, Y;
         /* approach :
-             0. Menjauhi Vertex 1
-             1. Mendekati Vertex 1
+             0. Mendekati Vertex 1 (istana raja)
+             1. Menjauhi Vertex 1 (istana raja)
 
-           X : Tempat Ferdiant Mulai
-           Y : Tempat Jose mengumpat 
+           X : Tempat Jose Mengumpat
+           Y : Tempat Ferdiant Mulai
         */
 
         //ctor

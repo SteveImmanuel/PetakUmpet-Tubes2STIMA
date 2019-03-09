@@ -19,7 +19,6 @@ namespace Tubes2Stima {
         private TextBox map_text, command_text, from_map_file, from_command_file;
         private Button button1, button2, submit, reset, closebtn;
         
-        //ctor (?)
         public F1() {
             MainGUI();
         }
