@@ -26,13 +26,17 @@ namespace Tubes2Stima{
             int a=Convert.ToInt32(temp2[0]);
             int b=Convert.ToInt32(temp2[1]);
             int c=Convert.ToInt32(temp2[2]);
-            
-            if(al.SearchPath(a,g.getNode(b-1),g.getNode(c-1))){
+            List<Node> path=new List<Node>();
+            if(al.SearchPath(a,g.getNode(b-1),g.getNode(c-1),path)){
                 Console.WriteLine("YES");
             }else{
                 Console.WriteLine("NO");
             }
-
+            Console.Write("Path=");
+            for(int i=0;i<path.Count;i++){
+                Console.Write(path[i].getID()+" ");
+            }
+            Console.WriteLine();
 
             Environment.Exit(0);
         }
