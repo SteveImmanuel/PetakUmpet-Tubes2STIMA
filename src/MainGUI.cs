@@ -1,0 +1,223 @@
+/*Tugas Besar II [IF2211] Strategi Algoritma
+Anggota Kelompok :
+    Aditya Putra Santosa    / 13517013
+    Steve Andreas Immanuel  / 13517039
+    Leonardo                / 13517048
+Nama File   : MainGUI.cs
+Deskripsi   : Memanggil GUI utama (WiP)
+*/
+using System;
+using System.IO;
+using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Collections.Generic;
+
+namespace Tubes2Stima {
+    public class F1 : Form {
+        private Label title, map_label, command_label, from_map_title, from_command_title;
+        private TextBox map_text, command_text, from_map_file, from_command_file;
+        private Button button1, button2, submit, reset, closebtn;
+        
+        public F1() {
+            MainGUI();
+        }
+
+        private void MainGUI() {
+            //inisialisasi GUI
+            this.Text = "Choose File for map and commands";
+            this.Size = new Size(500, 550);
+            this.BackColor = Color.FromArgb(100,100,100);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            //isi GUI
+            //title = GUI title (Label)
+            title = new Label();
+            title.Text = "Hide and Seek!";
+            title.BackColor = Color.FromArgb(230, 230, 230);
+            title.AutoSize = false;
+            title.TextAlign = ContentAlignment.MiddleCenter;
+            title.Font = new Font ("Futura LT" ,35, FontStyle.Bold|FontStyle.Italic);
+            title.BorderStyle = BorderStyle.FixedSingle;
+            title.Size = new Size (500, 75);
+            title.Location = new Point (0, 0);
+            this.Controls.Add(title);
+            //map_label = map below
+            map_label = new Label();
+            map_label.Text = "Insert .txt File for Map!";
+            map_label.Font = new Font ("Futura LT", 10);
+            map_label.Size = new Size (200, 25);
+            map_label.Location = new Point (50, 90); 
+            this.Controls.Add(map_label);
+            //map_text = text for map
+            map_text = new TextBox();
+            map_text.Text = "";
+            map_text.ReadOnly = true;
+            map_text.Font = new Font ("Futura LT", 8);
+            map_text.Size = new Size (200, 25);
+            map_text.Location = new Point (50, 115);
+            this.Controls.Add(map_text);
+            //button1 : take map file
+            button1 = new Button();
+            button1.Text = "Choose File";
+            button1.Font = new Font ("Futura LT", 10);
+            button1.BackColor = Color.FromArgb(230, 230, 230);
+            button1.Size = new Size(100, 25);
+            button1.Location = new Point (255, 114);
+            button1.Click += new System.EventHandler(this.AddMap);
+            this.Controls.Add(button1);
+            //command_label = command below
+            command_label = new Label();
+            command_label.Text = "Insert .txt File for Commands!";
+            command_label.Font = new Font ("Futura LT", 10);
+            command_label.Size = new Size (200, 25);
+            command_label.Location = new Point (50, 150);
+            this.Controls.Add(command_label);
+            //command_text = text for commands
+            command_text = new TextBox();
+            command_text.Text = "";
+            command_text.ReadOnly = true;
+            command_text.Font = new Font ("Futura LT", 8);
+            command_text.Size = new Size (200, 25);
+            command_text.Location = new Point (50, 175);
+            this.Controls.Add(command_text);
+            //button2 = take command file
+            button2 = new Button();
+            button2.Text = "Choose File";
+            button2.Font = new Font ("Futura LT", 10);
+            button2.BackColor = Color.FromArgb(230, 230, 230);
+            button2.Size = new Size (100, 25);
+            button2.Location = new Point (255, 174);
+            button2.Click += new System.EventHandler(this.AddCommand);
+            this.Controls.Add(button2);
+            //submit = button to submit file name and print its file content in GUI
+            submit = new Button();
+            submit.Text = "Submit";
+            submit.Font = new Font ("Futura LT", 10);
+            submit.BackColor = Color.FromArgb(0, 255, 0);
+            submit.Size = new Size (100, 42);
+            submit.Location = new Point (355, 114);
+            submit.Click += new System.EventHandler(this.SubmissionBox);
+            this.Controls.Add(submit);
+            //reset = button to reset map_text, command_text, from_map_file, and from_command_file
+            reset = new Button();
+            reset.Text = "Reset";
+            reset.Font = new Font ("Futura LT", 10);
+            reset.BackColor = Color.FromArgb(255, 0, 0);
+            reset.Size = new Size (100, 42);
+            reset.Location = new Point (355, 157);
+            reset.Click += new System.EventHandler(this.ResetBox);
+            this.Controls.Add(reset);
+            //from_map_title = label above map file contents
+            from_map_title = new Label();
+            from_map_title.Text = "Map File Contents :";
+            from_map_title.Font = new Font ("Futura LT", 8);
+            from_map_title.Size = new Size (200, 25);
+            from_map_title.Location = new Point (5, 225);
+            this.Controls.Add(from_map_title);
+            //from_map_file = label to show map file contents
+            from_map_file = new TextBox();
+            from_map_file.Text = "";
+            from_map_file.Font = new Font ("Futura LT", 8);
+            from_map_file.ReadOnly = true;
+            from_map_file.Multiline = true;
+            from_map_file.ScrollBars = ScrollBars.Vertical;
+            from_map_file.Size = new Size (235, 200);
+            from_map_file.Location = new Point (0, 250);
+            this.Controls.Add(from_map_file);
+            //from_command_title = label above command file contents
+            from_command_title = new Label();
+            from_command_title.Text = "Command File Contents :";
+            from_command_title.Font = new Font ("Futura LT", 8);
+            from_command_title.Size = new Size (200, 25);
+            from_command_title.Location = new Point (255, 225);
+            this.Controls.Add(from_command_title);
+            //from_command_file = label to show command file contents
+            from_command_file = new TextBox();
+            from_command_file.Text = "";
+            from_command_file.Font = new Font ("Futura LT", 8);
+            from_command_file.ReadOnly = true;
+            from_command_file.Multiline = true;
+            from_command_file.ScrollBars = ScrollBars.Vertical;
+            from_command_file.Size = new Size (235, 200);
+            from_command_file.Location = new Point (250, 250);
+            this.Controls.Add(from_command_file);
+            //closebtn = close gui
+            closebtn = new Button();
+            closebtn.Text = "Close";
+            closebtn.Font = new Font ("Futura LT", 10);
+            closebtn.BackColor = Color.FromArgb(230, 230, 230);
+            closebtn.Size = new Size (100, 25);
+            closebtn.Location = new Point(this.Width - 130, this.Height - 75);
+            closebtn.Click += new System.EventHandler(this.Close_Click);
+            this.Controls.Add(closebtn);
+        }
+
+        private void AddMap(object source, EventArgs e) {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            using (OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.InitialDirectory = "C:\\";
+                ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    this.map_text.Text = ofd.FileName;
+                }
+            }
+        }
+
+        private void AddCommand(object source, EventArgs e) {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            using (OpenFileDialog ofd = new OpenFileDialog()) {
+                ofd.InitialDirectory = "C:\\";
+                ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK) {
+                    this.command_text.Text = ofd.FileName;   
+                }
+            }
+        }
+
+        private void SubmissionBox(object source, EventArgs e){
+            //map
+            int Vertexes = new int(); Graph G = new Graph();
+            this.from_map_file.Text = ""; //assume correct input everytime
+            ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G);
+            this.from_map_file.Text += Vertexes;
+            for (int i = 0; i < G.getEdgeNum(); i++){
+                this.from_map_file.Text += "\r\n" + G.getEdge(i).getFrom();
+                this.from_map_file.Text += " " + G.getEdge(i).getTo();
+            }
+            //command
+            int comnum = new int(); List<Command> LC = new List<Command>();
+            this.from_command_file.Text = ""; //assume correct input everytime
+            ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
+            this.from_command_file.Text += comnum;
+            for (int i = 0; i < comnum; i++){
+                this.from_command_file.Text += "\r\n" + LC[i].getApproach();
+                this.from_command_file.Text += " " + LC[i].getX();
+                this.from_command_file.Text += " " + LC[i].getY();
+            }
+        }
+
+        private void ResetBox(object source, EventArgs e){
+            this.map_text.Text = "";
+            this.command_text.Text = "";
+            this.from_map_file.Text = "";
+            this.from_command_file.Text = "";
+        }
+
+        private void Close_Click(object source, EventArgs e){
+            Close();
+        }
+
+        [STAThread]
+        public static void Main(String[] args) {
+            Application.Run(new F1());
+        }
+    }
+}
