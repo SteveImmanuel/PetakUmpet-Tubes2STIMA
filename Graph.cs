@@ -97,7 +97,7 @@ namespace Tubes2Stima{
             }
         }
         public void generateWeight(Node _node,int _weight){
-            Console.WriteLine("ID="+_node.getID());
+            // Console.WriteLine("ID="+_node.getID());
             _node.setVisited(true);
             if(_node.getID()==0){
                 _node.setWeight(0);
@@ -109,10 +109,45 @@ namespace Tubes2Stima{
                     generateWeight(_node.getNeighbor(i),_weight+1);
                 }
             }
+            // Queue<int> visitNode=new Queue<int>();
+            // int tempID;
+            // int tempWeight=0;
+            // int tempNeighborSize;
+            // visitNode.Enqueue(1);
+            // visitNode.Enqueue(-1);
+            // visitNode.Enqueue(1);
+            // visitNode.Enqueue(2);
+            // visitNode.Enqueue(3);
+            // visitNode.Enqueue(4);
+            // visitNode.Enqueue(5);
+            
+            // while(visitNode.Count!=0){
+            //     tempID=visitNode.Dequeue();
+            //     if(tempID==-1){
+            //         tempWeight++;
+            //     }else{
+            //         Console.WriteLine("ID="+tempID+" tempWeight="+tempWeight);
+            //         this.getNode(tempID-1).setVisited(true);
+            //         this.getNode(tempID-1).setWeight(tempWeight);
+            //         tempNeighborSize=this.getNode(tempID-1).neighborSize();
+            //         if(tempNeighborSize>0){
+            //             for(int i=0;i<tempNeighborSize;i++){
+            //                 if(!this.getNode(tempID-1).getNeighbor(i).getVisited()){
+            //                     visitNode.Enqueue(this.getNode(tempID-1).getNeighbor(i).getID());
+            //                 }
+            //             }
+            //             visitNode.Enqueue(-1);
+            //         }
+            //     }
+            // }
         }
 
         public Node getNode(int i){
             return this.allNode[i];
+        }
+
+        public int getSize(){
+            return allNode.Count;
         }
 
     }
