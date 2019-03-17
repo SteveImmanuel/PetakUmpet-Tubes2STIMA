@@ -32,13 +32,13 @@ namespace Tubes2Stima{
                  Console.WriteLine(err);
             }
         }
-
+        /*
         public static void Main(String[] args){
             int stackSize = 1024*1024*15;
             Thread thread = new Thread(new ThreadStart(BigRecursion), stackSize);
             thread.Start();
         }
-
+        */
         public static void BigRecursion(){
             var watch=new System.Diagnostics.Stopwatch();
             Graph g=new Graph();
