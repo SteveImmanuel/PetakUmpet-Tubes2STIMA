@@ -17,19 +17,19 @@ namespace Tubes2Stima {
     public class F1 : Form {
         private Label title, map_label, command_label, from_map_title, from_command_title;
         private TextBox map_text, command_text, from_map_file, from_command_file;
-        private Button button1, button2, submit, reset, closebtn;
+        private Button button1, button2, load, reset, solvebtn, closebtn;
         
         public F1() {
             MainGUI();
         }
 
         private void MainGUI() {
-            //inisialisasi GUI
+            //initialize GUI
             this.Text = "Choose File for map and commands";
             this.Size = new Size(500, 550);
             this.BackColor = Color.FromArgb(100,100,100);
             this.StartPosition = FormStartPosition.CenterScreen;
-            //isi GUI
+            //GUI CONTENTS
             //title = GUI title (Label)
             title = new Label();
             title.Text = "Hide and Seek!";
@@ -89,15 +89,15 @@ namespace Tubes2Stima {
             button2.Location = new Point (255, 174);
             button2.Click += new System.EventHandler(this.AddCommand);
             this.Controls.Add(button2);
-            //submit = button to submit file name and print its file content in GUI
-            submit = new Button();
-            submit.Text = "Submit";
-            submit.Font = new Font ("Futura LT", 10);
-            submit.BackColor = Color.FromArgb(0, 255, 0);
-            submit.Size = new Size (100, 42);
-            submit.Location = new Point (355, 114);
-            submit.Click += new System.EventHandler(this.SubmissionBox);
-            this.Controls.Add(submit);
+            //load = button to load file name and print file contents to GUI
+            load = new Button();
+            load.Text = "Load";
+            load.Font = new Font ("Futura LT", 10);
+            load.BackColor = Color.FromArgb(0, 255, 0);
+            load.Size = new Size (100, 42);
+            load.Location = new Point (355, 114);
+            load.Click += new System.EventHandler(this.LoadBox);
+            this.Controls.Add(load);
             //reset = button to reset map_text, command_text, from_map_file, and from_command_file
             reset = new Button();
             reset.Text = "Reset";
@@ -141,6 +141,15 @@ namespace Tubes2Stima {
             from_command_file.Size = new Size (235, 200);
             from_command_file.Location = new Point (250, 250);
             this.Controls.Add(from_command_file);
+            //solvebtn = button connecting this GUI to graph making GUI
+            solvebtn = new Button();
+            solvebtn.Text = "Solve";
+            solvebtn.Font = new Font ("Futura LT", 10);
+            solvebtn.BackColor = Color.FromArgb(255, 105, 180);
+            solvebtn.Size = new Size (100, 25);
+            solvebtn.Location = new Point(15, this.Height - 75);
+            solvebtn.Click += new System.EventHandler(this.Solve_Click);
+            this.Controls.Add(solvebtn);
             //closebtn = close gui
             closebtn = new Button();
             closebtn.Text = "Close";
@@ -182,8 +191,8 @@ namespace Tubes2Stima {
             }
         }
 
-        private void SubmissionBox(object source, EventArgs e){
-            //map
+        private void LoadBox(object source, EventArgs e){
+            //show map contents
             int Vertexes = new int(); Graph G = new Graph();
             this.from_map_file.Text = ""; //assume correct input everytime
             ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G);
@@ -192,7 +201,7 @@ namespace Tubes2Stima {
                 this.from_map_file.Text += "\r\n" + G.getEdge(i).getFrom();
                 this.from_map_file.Text += " " + G.getEdge(i).getTo();
             }
-            //command
+            //show command contents
             int comnum = new int(); List<Command> LC = new List<Command>();
             this.from_command_file.Text = ""; //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
@@ -211,6 +220,9 @@ namespace Tubes2Stima {
             this.from_command_file.Text = "";
         }
 
+        private void Solve_Click(object source, EventArgs e){
+            //calling graph-drawing GUI
+        }
         private void Close_Click(object source, EventArgs e){
             Close();
         }
