@@ -16,6 +16,8 @@ namespace Tubes2Stima
         private Graph G;
         private int width, height;
         private int nNode;
+        private bool animateInitGraph;
+        Texture2D t;
         public Game1(ref Graph _G, int _w, int _h, int _n)
         {
             graphics = new GraphicsDeviceManager(this);
@@ -24,7 +26,7 @@ namespace Tubes2Stima
             width = _w;
             height = _h;
             nNode = _n;
-            graphics.PreferredBackBufferWidth = width;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferWidth = width+600;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = height;   // set this value to the desired height of your window
             graphics.ApplyChanges();
         }
@@ -39,6 +41,7 @@ namespace Tubes2Stima
         {
             // TODO: Add your initialization logic here
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 30.0f);
+            animateInitGraph = true;
             G.ForceDirected(this.width, this.height, false);
             base.Initialize();
         }
@@ -52,6 +55,9 @@ namespace Tubes2Stima
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("NodeID");
+            t = new Texture2D(GraphicsDevice, 1, 1);
+            t.SetData<Color>(
+                new Color[] { Color.White });
             // TODO: use this.Content to load your game content here
         }
 
@@ -75,7 +81,10 @@ namespace Tubes2Stima
                 Exit();
 
             // TODO: Add your update logic here
-            G.updatePosFD(this.width, this.height);
+            if (animateInitGraph)
+            {
+                animateInitGraph = G.updatePosFD(this.width, this.height);
+            }
             base.Update(gameTime);
         }
 
@@ -91,14 +100,51 @@ namespace Tubes2Stima
             spriteBatch.Begin();
             for (int i = 0; i < nNode; i++)
             {
-                int x = (int)G.getNode(i).getX();
-                int y = (int)G.getNode(i).getY();
+                Node temp = G.getNode(i);
+                int x = (int)temp.getX();
+                int y = (int)temp.getY();
                 x = normKoorDraw(0, width, x, 60);
                 y = normKoorDraw(0, height, y, 20);
-                spriteBatch.DrawString(font, "Id : "+G.getNode(i).getID(), new Vector2(x, y), Color.Black);
+                spriteBatch.DrawString(font, "Id : " + G.getNode(i).getID(), new Vector2(x, y), Color.Black);
+                //Gambar garis ke tetangga
+                for (int j = 0; j < temp.neighborSize(); j++)
+                {
+                    Node tetanggaTemp = temp.getNeighbor(j);
+                    int xT = (int)tetanggaTemp.getX();
+                    int yT = (int)tetanggaTemp.getY();
+                    xT = normKoorDraw(0, width, xT, 60);
+                    yT = normKoorDraw(0, height, yT, 20);
+                    DrawLine(spriteBatch, //draw line
+                        new Vector2(x, y), //start of line
+                        new Vector2(xT, yT) //end of line
+                    );
+                }
             }
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        {
+            Vector2 edge = end - start;
+            // calculate angle to rotate line
+            float angle =
+                (float)Math.Atan2(edge.Y, edge.X);
+
+
+            sb.Draw(t,
+                new Rectangle(// rectangle defines shape of line and position of start of line
+                    (int)start.X,
+                    (int)start.Y,
+                    (int)edge.Length(), //sb will strech the texture to fill this rectangle
+                    1), //width of line, change this to make thicker line
+                null,
+                Color.Red, //colour of line
+                angle,     //angle of line (calulated above)
+                new Vector2(0, 0), // point in line about which to rotate
+                SpriteEffects.None,
+                0);
+
         }
 
         private int normKoorDraw(int min, int max, int val, int delta)

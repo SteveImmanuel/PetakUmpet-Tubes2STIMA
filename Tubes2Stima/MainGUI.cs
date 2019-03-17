@@ -18,7 +18,8 @@ namespace Tubes2Stima {
         private Label title, map_label, command_label, from_map_title, from_command_title;
         private TextBox map_text, command_text, from_map_file, from_command_file;
         private Button button1, button2, load, reset, solvebtn, closebtn;
-        
+        private int Vertexes;
+        private Graph G;
         public F1() {
             MainGUI();
         }
@@ -193,7 +194,8 @@ namespace Tubes2Stima {
 
         private void LoadBox(object source, EventArgs e){
             //show map contents
-            int Vertexes = new int(); Graph G = new Graph();
+            Vertexes = new int();
+            G = new Graph();
             this.from_map_file.Text = ""; //assume correct input everytime
             string strText = "";
             ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G, ref strText);

@@ -13,8 +13,8 @@ using System;
 namespace Tubes2Stima{
     public class Node{
         private List<Node> neighbor;
-        private double posX;
-        private double posY;
+        private double posX, posY;
+        private double vX, vY;
         private Boolean isPosStatic; //isPosStatic = true jika node tidak ada bergerak di iterasi sebelumnya
         private int weight;
         private int ID;
@@ -27,6 +27,8 @@ namespace Tubes2Stima{
             this.weight=0;
             this.posX = 0;
             this.posY = 0;
+            this.vX = 0;
+            this.vY = 0;
         }
 
         public Node(int _ID, double _posX, double _posY)
@@ -37,6 +39,8 @@ namespace Tubes2Stima{
             this.weight = 0;
             this.posX = _posX;
             this.posY = _posY;
+            this.vX = 0;
+            this.vY = 0;
         }
 
         public void addNeighbor(Node _neighbor){
@@ -69,6 +73,22 @@ namespace Tubes2Stima{
         public void setY(double _posY)
         {
             this.posY = _posY;
+        }
+
+        public void setvX(double _vX)
+        {
+            this.vX = _vX;
+        }
+
+        public void setvY(double _vY)
+        {
+            this.vY = _vY;
+        }
+
+        public void updatePos(double dt)
+        {
+            this.posX += vX * dt;
+            this.posY += vY * dt;
         }
 
         public void setWeight(int _weight){
@@ -155,22 +175,22 @@ namespace Tubes2Stima{
                 for (int i = 0; i < n.neighborSize(); i++)
                 {
                     //Hitung gaya hooke (gaya tarik)
-                    double kHooke = 2;
-                    vX += -1 * kHooke * (n.getX() - n.getNeighbor(i).getX());
-                    vY += -1 * kHooke * (n.getY() - n.getNeighbor(i).getY());
+                    double kHooke = 40;
+                    vX += -1 * kHooke * (n.getX() - n.getNeighbor(i).getX()) / 100;
+                    vY += -1 * kHooke * (n.getY() - n.getNeighbor(i).getY()) / 100;
                 }
                 foreach (var nCoul in allNode)
                 {
                     if(n.getID() != nCoul.getID())
                     {
                         //Hitung gaya coulomb (gaya repulsif)
-                        double kCoulomb = 500;///((n.getWeight()+1) * (nCoul.getWeight()+1));
-                        double fCoulomb = kCoulomb / (Math.Pow(n.getX() - nCoul.getX(), 2) + Math.Pow(n.getY() - nCoul.getY(), 2));
-                        vX += fCoulomb * (n.getX() - nCoul.getX());
-                        vY += fCoulomb * (n.getY() - nCoul.getY());
+                        double kCoulomb = 200;///((n.getWeight()+1) * (nCoul.getWeight()+1));
+                        double fCoulomb = kCoulomb / (Math.Pow(n.getX()/100 - nCoul.getX()/100, 2) + Math.Pow(n.getY()/100 - nCoul.getY()/100, 2));
+                        vX += fCoulomb * (n.getX() - nCoul.getX()) / 100;
+                        vY += fCoulomb * (n.getY() - nCoul.getY()) / 100;
                     }
                 }
-                double epsilon = 0.005;
+                double epsilon = 10;
                 if (Math.Abs(vX) <= epsilon && Math.Abs(vY) <= epsilon)
                 {
                     n.setIsStatic(true);
@@ -178,14 +198,18 @@ namespace Tubes2Stima{
                 else
                 {
                     allStatic = false;
-                    double dt = 60;
                     n.setIsStatic(false);
-                    n.setX(n.getX() + vX / dt);
-                    n.setY(n.getY() + vY / dt);
+                    n.setvX(vX);
+                    n.setvY(vY);
                 }
             }
+            foreach(var n in allNode)
+            {
+                double dt = 1.0/15;
+                n.updatePos(dt);
+            }
             this.normalizeKoordinat(width, height);
-            return allStatic;
+            return !allStatic;
         }
 
         public void ForceDirected(int width, int height, bool langsung)
@@ -204,6 +228,7 @@ namespace Tubes2Stima{
                 xAwal += dx;
                 if (xAwal > width)
                 {
+                    xAwal = 0;
                     yAwal += dy;
                 }
             }
