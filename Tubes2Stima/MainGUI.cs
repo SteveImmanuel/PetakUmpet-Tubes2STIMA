@@ -166,7 +166,7 @@ namespace Tubes2Stima {
             var fileContent = string.Empty;
             var filePath = string.Empty;
             using (OpenFileDialog ofd = new OpenFileDialog()) {
-                ofd.InitialDirectory = "C:\\";
+                ofd.InitialDirectory = Directory.GetCurrentDirectory();
                 ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
                 ofd.FilterIndex = 2;
                 ofd.RestoreDirectory = true;
@@ -181,7 +181,7 @@ namespace Tubes2Stima {
             var fileContent = string.Empty;
             var filePath = string.Empty;
             using (OpenFileDialog ofd = new OpenFileDialog()) {
-                ofd.InitialDirectory = "C:\\";
+                ofd.InitialDirectory = Directory.GetCurrentDirectory();
                 ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
                 ofd.FilterIndex = 2;
                 ofd.RestoreDirectory = true;
@@ -202,7 +202,8 @@ namespace Tubes2Stima {
             this.from_map_file.Text += Vertexes;
             this.from_map_file.Text += strText;
             //show command contents
-            int comnum = new int(); List<Command> LC = new List<Command>();
+            int comnum = new int();
+            List<Command> LC = new List<Command>();
             this.from_command_file.Text = ""; //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
             this.from_command_file.Text += comnum;
@@ -223,8 +224,10 @@ namespace Tubes2Stima {
         private void Solve_Click(object source, EventArgs e){
             //calling graph-drawing GUI
             //Run Visualization
-            using (var game = new Game1(ref G,500,500, Vertexes))
+            using (var game = new Game1(ref G, 500, 500))
+            {
                 game.Run();
+            }
         }
         
         private void Close_Click(object source, EventArgs e){
@@ -236,5 +239,55 @@ namespace Tubes2Stima {
             Application.Run(new F1());
         }
         
+    }
+
+    public class Command
+    {
+        private int approach, X, Y;
+        /* approach :
+             0. Mendekati Vertex 1 (istana raja)
+             1. Menjauhi Vertex 1 (istana raja)
+
+           X : Tempat Jose Mengumpat
+           Y : Tempat Ferdiant Mulai
+        */
+
+        //ctor
+        public Command(int _approach, int _X, int _Y)
+        {
+            this.approach = _approach;
+            this.X = _X;
+            this.Y = _Y;
+        }
+        //getter
+        public int getApproach()
+        {
+            return this.approach;
+        }
+
+        public int getX()
+        {
+            return this.X;
+        }
+
+        public int getY()
+        {
+            return this.Y;
+        }
+        //setter
+        public void setApproach(int _approach)
+        {
+            this.approach = _approach;
+        }
+
+        public void setX(int _X)
+        {
+            this.X = _X;
+        }
+
+        public void setY(int _Y)
+        {
+            this.Y = _Y;
+        }
     }
 }

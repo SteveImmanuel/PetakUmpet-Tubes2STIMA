@@ -21,37 +21,31 @@ namespace Tubes2Stima{
                         g.getNode(int.Parse(temp[0])-1).addNeighbor(g.getNode(int.Parse(temp[1])-1));
                         g.getNode(int.Parse(temp[1])-1).addNeighbor(g.getNode(int.Parse(temp[0])-1));
                     }
-                    // string str;
-                    // while ((str = map_file_reader.ReadLine()) != null){
-                    //     string[] tuple = str.Split(' ');
-                    //     Edge E = new Edge (int.Parse(tuple[0]), int.Parse(tuple[1]));
-                    //     listOfEdge.AddEdge(E);
-                    // }
                 }
             } catch (Exception err) {
                  Console.WriteLine(err);
             }
         }
-        /*
-        public static void Main(String[] args){
+        
+        /*public static void Main(String[] args){
             int stackSize = 1024*1024*15;
             Thread thread = new Thread(new ThreadStart(BigRecursion), stackSize);
             thread.Start();
-        }
-        */
+        }*/
+        
         public static void BigRecursion(){
             var watch=new System.Diagnostics.Stopwatch();
             Graph g=new Graph();
             Algorithm al=new Algorithm();
-            ReadMap("result.txt",g);
+            ReadMap("10.txt",g);
             Console.WriteLine("Generating...");
             g.generateWeight(g.getNode(0),0);
             g.unvisitAll();
             Console.WriteLine("Done");
-            // for(int i=0;i<g.getSize();i++){
-            //     g.getNode(i).printInfo();
-            //     Console.WriteLine();
-            // }
+            for(int i=0;i<g.getNodeSize();i++){
+                g.getNode(i).printInfo();
+                Console.WriteLine();
+            }
             var temp2=Console.ReadLine().Split(' ');
             int a=Convert.ToInt32(temp2[0]);
             int b=Convert.ToInt32(temp2[1]);

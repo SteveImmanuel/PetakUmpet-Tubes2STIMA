@@ -12,26 +12,24 @@ namespace Tubes2Stima
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D t;
+        MouseState mouseState;
         private SpriteFont font;
         private Graph G;
         private int width, height;
-        private int nNode;
-        private bool animateInitGraph;
-        Texture2D t;
-        private List<Body> listBody = new List<Body>();
-        private QuadNode quadTree;
-        private List<Quad> quads = new List<Quad>();
+        private int previousScrollValue;
 
-        public Game1(ref Graph _G, int _w, int _h, int _n)
+        public Game1(ref Graph _G, int _w, int _h)
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             G = _G;
             width = _w;
             height = _h;
-            nNode = _n;
-            graphics.PreferredBackBufferWidth = width+600;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = height;   // set this value to the desired height of your window
+            mouseState = Mouse.GetState();
+            previousScrollValue = mouseState.ScrollWheelValue;
+            graphics.PreferredBackBufferWidth = width;
+            graphics.PreferredBackBufferHeight = height;
             graphics.ApplyChanges();
         }
 
@@ -45,126 +43,111 @@ namespace Tubes2Stima
         {
             // TODO: Add your initialization logic here
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 30.0f);
-            animateInitGraph = true;
-            G.ForceDirected(this.width, this.height, false);
-            for (int i = 0; i < G.getSize(); i++)
-            {
-                listBody.Add(new Body(G.getNode(i)));
-            }
+            this.IsFixedTimeStep = false;
+            G.generateWeight(G.getNode(0), 0);
+            G.unvisitAll();
+            G.GeneratePosition(this.width, this.height);
+            //for (int i = 0; i < G.getNodeSize(); i++)
+            //{
+            //    G.getNode(i).printInfo();
+            //    Console.WriteLine();
+            //}
+
+            //for (int i = 0; i < this.G.getEdgeSize(); i++)
+            //{
+            //    Edge tempEdge = this.G.getEdge(i);
+            //    Console.WriteLine("{0},{1}", G.getEdge(i).getFrom(), G.getEdge(i).getTo());
+            //    Node tempNode1 = G.getNode(tempEdge.getFrom());
+            //    Node tempNode2 = G.getNode(tempEdge.getTo());
+            //    Console.WriteLine("edge antara : {0},{1}", tempNode1.getID(), tempNode2.getID());
+            //}
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("NodeID");
             t = new Texture2D(GraphicsDevice, 1, 1);
-            t.SetData<Color>(
-                new Color[] { Color.White });
-            // TODO: use this.Content to load your game content here
+            t.SetData<Color>(new Color[] { Color.White });
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
-            Koordinat2D center = new Koordinat2D(width / 2, height / 2);
-            quadTree = new QuadNode(1, center, height);
-            foreach (Body bod in listBody)
+            mouseState = Mouse.GetState();
+            int curScrollVal = mouseState.ScrollWheelValue;
+            if (curScrollVal > previousScrollValue)
             {
-                quadTree.addBody(bod);
-            }
-            foreach(Body body in listBody)
+                width += 20;
+                height += 20;
+                previousScrollValue = curScrollVal;
+            }else if(curScrollVal < previousScrollValue)
             {
-                quadTree.interact(body, 0.5f);
-                body.update();
+                width -= 20;
+                height -= 20;
+                previousScrollValue = curScrollVal;
             }
+            G.GeneratePosition(width, height);
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, null);
+            for (int i = 0; i < this.G.getEdgeSize(); i++)
+            {
+                Edge tempEdge = this.G.getEdge(i);
+                Node tempNode1 = G.getNode(tempEdge.getFrom());
+                Node tempNode2 = G.getNode(tempEdge.getTo());
+                DrawLine(
+                    new Vector2(tempNode1.getX(), tempNode1.getY()),
+                    new Vector2(tempNode2.getX(), tempNode2.getY())
+                , 1);
+            }
 
-            // TODO: Add your drawing code here
-            spriteBatch.Begin();
-            for (int i = 0; i < nNode; i++)
+            for (int i = 0; i < this.G.getNodeSize(); i++)
             {
                 Node temp = G.getNode(i);
                 int x = (int)temp.getX();
                 int y = (int)temp.getY();
-                x = normKoorDraw(0, width, x, 60);
-                y = normKoorDraw(0, height, y, 20);
-                spriteBatch.DrawString(font, "Id : " + G.getNode(i).getID(), new Vector2(x, y), Color.Black);
-                //Gambar garis ke tetangga
-                for (int j = 0; j < temp.neighborSize(); j++)
-                {
-                    Node tetanggaTemp = temp.getNeighbor(j);
-                    int xT = (int)tetanggaTemp.getX();
-                    int yT = (int)tetanggaTemp.getY();
-                    xT = normKoorDraw(0, width, xT, 60);
-                    yT = normKoorDraw(0, height, yT, 20);
-                    DrawLine(spriteBatch, //draw line
-                        new Vector2(x, y), //start of line
-                        new Vector2(xT, yT) //end of line
-                    );
-                }
+                spriteBatch.DrawString(font,temp.getID().ToString(), new Vector2(x, y), Color.Black);
+                DrawBorder(new Rectangle(x, y+20, 20, 20), 2);
             }
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        private void DrawBorder(Rectangle rec, int thick)
+        {
+            Vector2 topLeft = new Vector2(rec.X, rec.Y);
+            Vector2 topRight = new Vector2(rec.X+ rec.Width, rec.Y);
+            Vector2 bottomLeft = new Vector2(rec.X, rec.Y- rec.Height);
+            Vector2 bottomRight = new Vector2(rec.X+rec.Width, rec.Y- rec.Height);
+            DrawLine(topLeft, topRight,thick);
+            DrawLine(topLeft, bottomLeft, thick);
+            DrawLine(bottomLeft, bottomRight, thick);
+            DrawLine(bottomRight, topRight, thick);
+        }
+
+        private void DrawLine(Vector2 start, Vector2 end,int thick)
         {
             Vector2 edge = end - start;
-            // calculate angle to rotate line
-            float angle =
-                (float)Math.Atan2(edge.Y, edge.X);
-
-
-            sb.Draw(t,
-                new Rectangle(// rectangle defines shape of line and position of start of line
+            float angle = (float)Math.Atan2(edge.Y, edge.X);
+            spriteBatch.Draw(t,
+                new Rectangle(
                     (int)start.X,
                     (int)start.Y,
-                    (int)edge.Length(), //sb will strech the texture to fill this rectangle
-                    1), //width of line, change this to make thicker line
+                    (int)edge.Length(),
+                    thick), //width of line, change this to make thicker line
                 null,
-                Color.Red, //colour of line
+                Color.Black, //colour of line
                 angle,     //angle of line (calulated above)
                 new Vector2(0, 0), // point in line about which to rotate
                 SpriteEffects.None,
                 0);
 
-        }
-
-        public int normKoorDraw(int min, int max, int val, int delta)
-        {
-            return (min+delta) + (max-min - 2 * delta) * (val-min) /(max-min);
         }
     }
 }
