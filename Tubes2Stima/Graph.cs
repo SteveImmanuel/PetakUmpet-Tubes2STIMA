@@ -13,8 +13,7 @@ using System;
 namespace Tubes2Stima{
     public class Node{
         private List<Node> neighbor;
-        private double posX, posY;
-        private double vX, vY;
+        public Koordinat2D pos, v, a;
         private Boolean isPosStatic; //isPosStatic = true jika node tidak ada bergerak di iterasi sebelumnya
         private int weight;
         private int ID;
@@ -25,10 +24,9 @@ namespace Tubes2Stima{
             this.visited=false;
             this.neighbor=new List<Node>();
             this.weight=0;
-            this.posX = 0;
-            this.posY = 0;
-            this.vX = 0;
-            this.vY = 0;
+            pos = new Koordinat2D(0, 0);
+            v = new Koordinat2D(0, 0);
+            a = new Koordinat2D(0, 0);
         }
 
         public Node(int _ID, double _posX, double _posY)
@@ -37,10 +35,9 @@ namespace Tubes2Stima{
             this.visited = false;
             this.neighbor = new List<Node>();
             this.weight = 0;
-            this.posX = _posX;
-            this.posY = _posY;
-            this.vX = 0;
-            this.vY = 0;
+            pos = new Koordinat2D(0, 0);
+            v = new Koordinat2D(0, 0);
+            a = new Koordinat2D(0, 0);
         }
 
         public void addNeighbor(Node _neighbor){
@@ -55,40 +52,18 @@ namespace Tubes2Stima{
             return this.neighbor.Count;
         }
 
-        public double getX()
+        public bool isNeighbor(Node _neighbor)
         {
-            return this.posX;
+            return this.neighbor.Contains(_neighbor);
         }
 
-        public double getY()
+        public void updatePos(Koordinat2D force, double dt)
         {
-            return this.posY;
-        }
-
-        public void setX(double _posX)
-        {
-            this.posX = _posX;
-        }
-
-        public void setY(double _posY)
-        {
-            this.posY = _posY;
-        }
-
-        public void setvX(double _vX)
-        {
-            this.vX = _vX;
-        }
-
-        public void setvY(double _vY)
-        {
-            this.vY = _vY;
-        }
-
-        public void updatePos(double dt)
-        {
-            this.posX += vX * dt;
-            this.posY += vY * dt;
+            //a = F/m, m default = 2
+            this.a = force * 0.5;
+            this.v = this.v + (this.a * dt);
+            this.pos = this.pos + (this.v * dt);
+            this.a.setZero();
         }
 
         public void setWeight(int _weight){
@@ -121,8 +96,8 @@ namespace Tubes2Stima{
             Console.WriteLine("NeighborSize="+this.neighborSize());
             Console.WriteLine("Weight="+this.getWeight());
             Console.WriteLine("Visit="+this.getVisited());
-            Console.Write(", X= " + this.getX());
-            Console.WriteLine(", Y= " + this.getY());
+            Console.Write(", X= " + this.pos.x);
+            Console.WriteLine(", Y= " + this.pos.y);
         }
 
     }
@@ -223,12 +198,11 @@ namespace Tubes2Stima{
             //harus panggil updatePosFD tiap tick kalo langsung=false
             int xAwal = 0;
             int yAwal = 0;
-            int dx = width / ((int)Math.Sqrt(allNode.Capacity));
+            int dx = width / ((int)Math.Sqrt(allNode.Count));
             int dy = dx;
             foreach (var n in allNode)
             {
-                n.setX(xAwal);
-                n.setY(yAwal);
+                n.pos = new Koordinat2D(xAwal, yAwal);
                 xAwal += dx;
                 if (xAwal > width)
                 {
@@ -266,35 +240,36 @@ namespace Tubes2Stima{
             //Normalisasi Koordinat agar berada di rentang 0-width, 0-height
             //Cari maxX, maxY, minX, minY
             double maxX, maxY, minX, minY;
-            maxX = getNode(0).getX();
-            maxY = getNode(0).getY();
+            maxX = getNode(0).pos.x;
+            maxY = getNode(0).pos.y;
             minX = maxX;
             minY = maxY;
             foreach (var n in allNode)
             {
-                if (n.getX() > maxX)
+                if (n.pos.x > maxX)
                 {
-                    maxX = n.getX();
+                    maxX = n.pos.x;
                 }
-                else if (n.getX() < minX)
+                else if (n.pos.x < minX)
                 {
-                    minX = n.getX();
+                    minX = n.pos.x;
                 }
 
-                if (n.getY() > maxY)
+                if (n.pos.y > maxY)
                 {
-                    maxY = n.getY();
+                    maxY = n.pos.y;
                 }
-                else if (n.getY() < minY)
+                else if (n.pos.y < minY)
                 {
-                    minY = n.getY();
+                    minY = n.pos.y;
                 }
             }
             //Console.WriteLine("Normalize Koordinat");
             foreach (var n in allNode)
             {
-                n.setX(width * (n.getX() - minX) / (maxX - minX));
-                n.setY(height * (n.getY() - minY) / (maxY - minY));
+                double x = (width * (n.pos.x - minX) / (maxX - minX));
+                double y = (height * (n.pos.y - minY) / (maxY - minY));
+                n.pos = new Koordinat2D(x, y);
                 //Console.Write("ID= " + n.getID());
                 //Console.Write(", X= " + n.getX());
                 //Console.WriteLine(", Y= " + n.getY());

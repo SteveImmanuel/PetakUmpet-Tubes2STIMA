@@ -223,7 +223,7 @@ namespace Tubes2Stima {
         private void Solve_Click(object source, EventArgs e){
             //calling graph-drawing GUI
             //Run Visualization
-            using (var game = new Game1(ref G,500,500, Vertexes))
+            using (var game = new Game1(ref G,1600,1000, Vertexes))
                 game.Run();
         }
         
