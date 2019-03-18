@@ -4,21 +4,36 @@
 /////////////////////////////////////////////////////////////
 
 Petak Umpet dengan Memanfaatkan Penelusuran pada Graf
-(Penerapan DFS)
+(Penerapan DFS dan Backtracking)
 
 File : 
-kalem belom
+- Graph.cs
+- MainGUI.cs
+- ReadFile.cs
+- Algorithm.cs
+- Classes.cs
+- Game1.cs 
 
 Bahasa Pemrograman : C#
 
 Syarat dan langkah-langkah kompilasi :
-belom
+- Memiliki Visual Studio dengan kakas .NET dan Monogame terinstalasi
+- Program dijalankan pada sistem operasi Windows
+- Ambil file dengan tombol Choose file, lalu Load file tersebut ke GUI
+- Tekan tombol solve untuk Menggambar graf dan mencetak hasil dari setiap
+  pertanyaan Ferdiant.
 
 Fitur-fitur : 
-belom
+- Mengambil data peta dan pertanyaan dari File eksternal dengan
+  ekstensi .txt
+- Pengambilan data menggunakan Open File Dialog
+- Graf yang tergambar menggunakan algoritma Force Directed Graph hingga mendapat
+  bentuk graf yang stabil
+- Front end terhubung dengan backend untuk mendapatkan jawaban atas semua
+  pertanyaan Ferdiant
 
 Informasi-informasi tambahan : 
-belom
+- Visualisasi graf menggunakan Monogame.
 
 Dibuat Oleh :
 Aditya Putra Santosa   / 13517013
