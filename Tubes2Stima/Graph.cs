@@ -166,6 +166,7 @@ namespace Tubes2Stima{
 
         public Boolean updatePosFD(int width, int height)
         {
+            /*
             //Update posisi semua node sesuai algo force directed
             Boolean allStatic = true;
             foreach(var n in allNode)
@@ -210,10 +211,13 @@ namespace Tubes2Stima{
             }
             this.normalizeKoordinat(width, height);
             return !allStatic;
+            */
+            return true;
         }
 
         public void ForceDirected(int width, int height, bool langsung)
         {
+            
             //Force Directed Graph Drawing algorithm
             //kalo langsung=false, hanya menyiapkan nodenya saja
             //harus panggil updatePosFD tiap tick kalo langsung=false
@@ -232,6 +236,7 @@ namespace Tubes2Stima{
                     yAwal += dy;
                 }
             }
+            /*
             //Console.WriteLine("Done set 0 semua");
             if (langsung)
             {
@@ -247,12 +252,13 @@ namespace Tubes2Stima{
                         Console.Write(", X= " + n.getX());
                         Console.WriteLine(", Y= " + n.getY());
                     }
-                    */
+                    
                     iterasi -= 1;
                     temp = this.updatePosFD(width, height);
                 }
                 this.normalizeKoordinat(width, height);
             }
+            */
         }
 
         public void normalizeKoordinat(int width, int height)

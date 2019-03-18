@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-
+using System.Collections.Generic;
 namespace Tubes2Stima
 {
     /// <summary>
@@ -18,6 +18,10 @@ namespace Tubes2Stima
         private int nNode;
         private bool animateInitGraph;
         Texture2D t;
+        private List<Body> listBody = new List<Body>();
+        private QuadNode quadTree;
+        private List<Quad> quads = new List<Quad>();
+
         public Game1(ref Graph _G, int _w, int _h, int _n)
         {
             graphics = new GraphicsDeviceManager(this);
@@ -43,6 +47,10 @@ namespace Tubes2Stima
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 30.0f);
             animateInitGraph = true;
             G.ForceDirected(this.width, this.height, false);
+            for (int i = 0; i < G.getSize(); i++)
+            {
+                listBody.Add(new Body(G.getNode(i)));
+            }
             base.Initialize();
         }
 
@@ -81,9 +89,16 @@ namespace Tubes2Stima
                 Exit();
 
             // TODO: Add your update logic here
-            if (animateInitGraph)
+            Koordinat2D center = new Koordinat2D(width / 2, height / 2);
+            quadTree = new QuadNode(1, center, height);
+            foreach (Body bod in listBody)
             {
-                animateInitGraph = G.updatePosFD(this.width, this.height);
+                quadTree.addBody(bod);
+            }
+            foreach(Body body in listBody)
+            {
+                quadTree.interact(body, 0.5f);
+                body.update();
             }
             base.Update(gameTime);
         }
@@ -147,7 +162,7 @@ namespace Tubes2Stima
 
         }
 
-        private int normKoorDraw(int min, int max, int val, int delta)
+        public int normKoorDraw(int min, int max, int val, int delta)
         {
             return (min+delta) + (max-min - 2 * delta) * (val-min) /(max-min);
         }
