@@ -13,23 +13,26 @@ using System.Collections.Generic;
 
 namespace Tubes2Stima {
     public class ReadFile {
-        public static void ReadMap(string filename, ref int Vertexes, ref Graph listOfEdge, ref string strText) {
+        public static void ReadMap(string filename, ref int Vertexes, ref Graph G, ref string strText) {
             try {
                 var map_file = new FileStream(filename, FileMode.Open, FileAccess.Read);
                 using (var map_file_reader = new StreamReader(map_file, Encoding.UTF8)){
                     Vertexes = int.Parse(map_file_reader.ReadLine());
                     for (int i = 0; i < Vertexes; i++)
                     {
-                        listOfEdge.addNode(new Node(i + 1));
+                        G.addNode(new Node(i + 1));
                     }
                     string str;
+                    string[] tuple;
+                    StringBuilder strb = new StringBuilder();
                     while ((str = map_file_reader.ReadLine()) != null){
-                        string[] tuple = str.Split(' ');
-                        strText += "\r\n" + tuple[0] + " " + tuple[1];
+                        tuple = str.Split(' ');
+                        strb.Append("\r\n" + tuple[0] + " " + tuple[1]);
                         int awal = int.Parse(tuple[0])-1;
                         int akhir = int.Parse(tuple[1])-1;
-                        listOfEdge.addEdge(awal, akhir);
+                        G.addEdge(awal, akhir);
                     }
+                    strText = strb.ToString();
                 }
             } catch (Exception err) {
                  Console.WriteLine(err);

@@ -213,20 +213,25 @@ namespace Tubes2Stima
             this.from_map_file.Text = ""; //assume correct input everytime
             string strText = "";
             ReadFile.ReadMap(this.map_text.Text, ref Vertexes, ref G, ref strText);
-            this.from_map_file.Text += Vertexes;
-            this.from_map_file.Text += strText;
+            StringBuilder tempMap = new StringBuilder();
+            tempMap.Append(Vertexes);
+            tempMap.Append(strText);
+            this.from_map_file.Text = tempMap.ToString();
+
             //show command contents
             int comnum = new int();
             List<Command> LC = new List<Command>();
-            this.from_command_file.Text = ""; //assume correct input everytime
+            //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
-            this.from_command_file.Text += comnum;
+            StringBuilder tempCom = new StringBuilder();
+            tempCom.Append(comnum);
             for (int i = 0; i < comnum; i++)
             {
-                this.from_command_file.Text += "\r\n" + LC[i].getApproach();
-                this.from_command_file.Text += " " + LC[i].getX();
-                this.from_command_file.Text += " " + LC[i].getY();
+                tempCom.Append("\r\n" + LC[i].getApproach());
+                tempCom.Append(" " + LC[i].getX());
+                tempCom.Append(" " + LC[i].getY());
             }
+            this.from_command_file.Text = tempCom.ToString();
         }
 
         private void ResetBox(object source, EventArgs e)
@@ -254,18 +259,22 @@ namespace Tubes2Stima
             {
                 graph.AddEdge(E.getFrom().ToString(), E.getTo().ToString());
             }
-            foreach(var edge in graph.Edges)
-            {
-                edge.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
-            }
+            /*
+            graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
+            graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
+            Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
+            c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
+            c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
+            */
+            //bind the graph to the viewer 
             viewer.Graph = graph;
+            //associate the viewer with the form 
             form.SuspendLayout();
             viewer.Dock = System.Windows.Forms.DockStyle.Fill;
             form.Controls.Add(viewer);
-            form.Width = 1366;
-            form.Height = 768;
             form.ResumeLayout();
-
+            //show the form 
             form.ShowDialog();
         }
 
