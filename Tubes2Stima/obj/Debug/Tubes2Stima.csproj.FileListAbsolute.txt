@@ -91,7 +91,6 @@ C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Microsoft.Msagl.Drawing.xml
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Microsoft.Msagl.GraphViewerGdi.xml
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csprojAssemblyReference.cache
-C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.Form1.resources
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csproj.GenerateResource.cache
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csproj.CoreCompileInputs.cache
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.exe.manifest
@@ -99,3 +98,4 @@ C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tub
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csproj.CopyComplete
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.exe
 C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.pdb
+C:\Users\Steve\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.F2.resources

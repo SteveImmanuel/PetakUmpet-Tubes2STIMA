@@ -261,5 +261,7 @@ namespace Tubes2Stima
                 MessageBox.Show("Pilih dahulu query dari list", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        
     }
 }
