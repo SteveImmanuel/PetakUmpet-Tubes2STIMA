@@ -34,6 +34,7 @@ namespace Tubes2Stima
             //initialize GUI
             this.Text = "Choose File for map and commands";
             this.Size = new Size(500, 550);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.BackColor = Color.FromArgb(100, 100, 100);
             this.StartPosition = FormStartPosition.CenterScreen;
             //GUI CONTENTS
@@ -101,7 +102,7 @@ namespace Tubes2Stima
             load.Text = "Load";
             load.Font = new Font("Futura LT", 10);
             load.BackColor = Color.FromArgb(0, 255, 0);
-            load.Size = new Size(100, 42);
+            load.Size = new Size(100, 25);
             load.Location = new Point(355, 114);
             load.Click += new System.EventHandler(this.LoadBox);
             this.Controls.Add(load);
@@ -110,8 +111,8 @@ namespace Tubes2Stima
             reset.Text = "Reset";
             reset.Font = new Font("Futura LT", 10);
             reset.BackColor = Color.FromArgb(255, 0, 0);
-            reset.Size = new Size(100, 42);
-            reset.Location = new Point(355, 157);
+            reset.Size = new Size(100, 25);
+            reset.Location = new Point(355, 174);
             reset.Click += new System.EventHandler(this.ResetBox);
             this.Controls.Add(reset);
             //from_map_title = label above map file contents
