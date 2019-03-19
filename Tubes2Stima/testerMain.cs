@@ -54,7 +54,6 @@ namespace Tubes2Stima
             Console.WriteLine("Done");
             for (int i = 0; i < g.getNodeSize(); i++)
             {
-                g.getNode(i).printInfo();
                 Console.WriteLine();
             }
             var temp2 = Console.ReadLine().Split(' ');
@@ -63,7 +62,7 @@ namespace Tubes2Stima
             int c = Convert.ToInt32(temp2[2]);
 
             watch.Start();
-            if (al.SearchPath(a, g.getNode(b - 1), g.getNode(c - 1), g))
+            if (al.SearchPath(a, g.getNode(b - 1), g.getNode(c - 1), new List<Node>()))
             {
                 Console.WriteLine("YES");
             }
