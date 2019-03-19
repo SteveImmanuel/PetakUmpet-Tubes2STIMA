@@ -11,13 +11,12 @@ File :
 - MainGUI.cs
 - ReadFile.cs
 - Algorithm.cs
-- Classes.cs
-- Game1.cs 
+- Form1.cs 
 
 Bahasa Pemrograman : C#
 
 Syarat dan langkah-langkah kompilasi :
-- Memiliki Visual Studio dengan kakas .NET dan Monogame terinstalasi
+- Memiliki Visual Studio dengan kakas .NET dan MSAGL terinstalasi
 - Program dijalankan pada sistem operasi Windows
 - Ambil file dengan tombol Choose file, lalu Load file tersebut ke GUI
 - Tekan tombol solve untuk Menggambar graf dan mencetak hasil dari setiap
@@ -33,7 +32,7 @@ Fitur-fitur :
   pertanyaan Ferdiant
 
 Informasi-informasi tambahan : 
-- Visualisasi graf menggunakan Monogame.
+- Visualisasi graf menggunakan MSAGL (Microsoft Automatic Graph Layout).
 
 Dibuat Oleh :
 Aditya Putra Santosa   / 13517013
