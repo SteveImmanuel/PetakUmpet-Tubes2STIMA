@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 namespace Tubes2Stima
 {
     /// <summary>
@@ -30,7 +31,7 @@ namespace Tubes2Stima
             width = _w;
             height = _h;
             nNode = _n;
-            graphics.PreferredBackBufferWidth = width+600;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferWidth = width;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = height;   // set this value to the desired height of your window
             graphics.ApplyChanges();
         }
@@ -44,13 +45,13 @@ namespace Tubes2Stima
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 30.0f);
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 100.0);
             animateInitGraph = true;
             G.ForceDirected(this.width, this.height, false);
-            for (int i = 0; i < G.getSize(); i++)
-            {
-                listBody.Add(new Body(G.getNode(i)));
-            }
+            //for (int i = 0; i < G.getSize(); i++)
+            //{
+            //    listBody.Add(new Body(G.getNode(i)));
+            //}
             base.Initialize();
         }
 
@@ -89,20 +90,21 @@ namespace Tubes2Stima
                 Exit();
 
             // TODO: Add your update logic here
-            Koordinat2D center = new Koordinat2D(width / 2, height / 2);
-            quadTree = new QuadNode(1, center, height);
-            foreach (Body bod in listBody)
+            BarnesHut B = new BarnesHut(0,new Koordinat2D(width/2, height/2), width, height);
+            for (int i = 0; i < G.getSize(); i++)
             {
-                quadTree.addBody(bod);
+                B.addNodeSimulation(G.getNode(i));
             }
-            foreach(Body body in listBody)
+            for (int i = 0; i < G.getSize(); i++)
             {
-                quadTree.interact(body, 0.5f);
-                body.update();
+                Koordinat2D force = B.getForce(G.getNode(i), 0.5);
+                G.getNode(i).updatePos(force, 1/20.0);
             }
+            G.normalizeKoordinat(width, height);
             base.Update(gameTime);
         }
 
+       
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -116,8 +118,8 @@ namespace Tubes2Stima
             for (int i = 0; i < nNode; i++)
             {
                 Node temp = G.getNode(i);
-                int x = (int)temp.getX();
-                int y = (int)temp.getY();
+                int x = (int)temp.pos.x;
+                int y = (int)temp.pos.y;
                 x = normKoorDraw(0, width, x, 60);
                 y = normKoorDraw(0, height, y, 20);
                 spriteBatch.DrawString(font, "Id : " + G.getNode(i).getID(), new Vector2(x, y), Color.Black);
@@ -125,8 +127,8 @@ namespace Tubes2Stima
                 for (int j = 0; j < temp.neighborSize(); j++)
                 {
                     Node tetanggaTemp = temp.getNeighbor(j);
-                    int xT = (int)tetanggaTemp.getX();
-                    int yT = (int)tetanggaTemp.getY();
+                    int xT = (int)tetanggaTemp.pos.x;
+                    int yT = (int)tetanggaTemp.pos.y;
                     xT = normKoorDraw(0, width, xT, 60);
                     yT = normKoorDraw(0, height, yT, 20);
                     DrawLine(spriteBatch, //draw line

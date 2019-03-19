@@ -29,8 +29,11 @@ namespace Tubes2Stima
         public void normalize()
         {
             double length = this.magnitude();
-            x = x / length;
-            y = y / length;
+            if (Math.Abs(length) > 0.0001)
+            {
+                x = x / length;
+                y = y / length;
+            }
         }
 
         public static double distance(Koordinat2D K1, Koordinat2D K2)
@@ -52,6 +55,19 @@ namespace Tubes2Stima
             temp.x = K1.x - K2.x;
             temp.y = K1.y - K2.y;
             return temp;
+        }
+
+        public static Koordinat2D operator *(Koordinat2D K, double d)
+        {
+            Koordinat2D temp = new Koordinat2D(K.x, K.y);
+            temp.x *= d;
+            temp.y *= d;
+            return temp;
+        }
+
+        public Koordinat2D copy()
+        {
+            return new Koordinat2D(x, y);
         }
     }
 
@@ -87,17 +103,17 @@ namespace Tubes2Stima
             mass = 2.0f;
             velocity = new Koordinat2D(0, 0);
             acceleration = new Koordinat2D(0, 0);
-            position = new Koordinat2D(_n.getX(), _n.getY());
+            position = _n.pos;
             isi = _n;
         }
 
         public void update()
         {
-            velocity += acceleration;
-            position += velocity;
+            double dt = 1 / 60.0;
+            velocity += acceleration * dt;
+            position += velocity * dt;
             acceleration.setZero();
-            isi.setX(position.x);
-            isi.setY(position.y);
+            isi.pos = position;
         }
 
         public void interact(Body b)
@@ -110,19 +126,34 @@ namespace Tubes2Stima
             acceleration += new Koordinat2D(force.x / mass, force.y / mass);
         }
 
-        public double normKoor(double min, double max, double val, double delta)
+        public double pembatas(double min, double max, double val, double delta)
         {
-            return (min + delta) + (max - min - 2 * delta) * (val - min) / (max - min);
+            if(val < min-delta)
+            {
+                return min;
+            }
+            else if(val > max+delta)
+            {
+                return max;
+            }
+            else
+            {
+                return val;
+            }
         }
 
         public Koordinat2D attract(Body b)
         {
             Koordinat2D forc = position - b.position;
             double distance = forc.magnitude();
-            distance = normKoor(-50.0, 50.0, distance, 0);
+            distance = pembatas(50.0,250.0, distance, 0);
             forc.normalize();
-            double strenght = (G * mass * mass) / (distance * distance);
-            return new Koordinat2D(forc.x * strenght, forc.y * strenght);
+            //double strenght = -(G * mass * mass) / (distance * distance);
+            double hooke = -G * (distance-50);
+            double kCoulomb = 200;
+            double coulomb = kCoulomb/(distance*distance);
+            double strength = hooke + coulomb;
+            return new Koordinat2D(forc.x * strength, forc.y * strength);
         }
 
         public void addBody(Body body)
@@ -131,12 +162,8 @@ namespace Tubes2Stima
             double x = (position.x * mass + body.position.x * body.mass) / m;
             double y = (position.y * mass + body.position.y * body.mass) / m;
             mass = m;
-            position = new Koordinat2D(x, y);
-        }
-
-        private Koordinat2D CopyVector(Koordinat2D vec)
-        {
-            return new Koordinat2D(vec.x, vec.y);
+            position.x = x;
+            position.y = y;
         }
     }
 
@@ -145,7 +172,6 @@ namespace Tubes2Stima
 
         private List<Body> bodys = new List<Body>();
         private Body averageBody = null;
-
         private Koordinat2D center;
         private double size;
         private int level;
@@ -198,6 +224,7 @@ namespace Tubes2Stima
 
             if (childs[0] != null)
             {
+                //Cari seharusnya dia ditaruh di kuadran mana
                 int index = getSplitIndex(body);
                 if (index != -1)
                 {
