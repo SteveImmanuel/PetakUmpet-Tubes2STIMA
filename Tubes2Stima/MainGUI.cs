@@ -23,6 +23,7 @@ namespace Tubes2Stima
         private Button button1, button2, load, reset, solvebtn, closebtn;
         private int Vertexes;
         private Graph G = null;
+        private List<Command> LC = new List<Command>();
         private F2 visualGraph;
 
         public F1()
@@ -222,7 +223,7 @@ namespace Tubes2Stima
             this.from_map_file.Text += strText;
             //show command contents
             int comnum = new int();
-            List<Command> LC = new List<Command>();
+            LC.Clear();
             this.from_command_file.Text = ""; //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
             this.from_command_file.Text += comnum;
@@ -243,9 +244,11 @@ namespace Tubes2Stima
             if (G != null)
             {
                 G.unvisitAll();
+                G.unColorAll();
                 G.allNode.Clear();
                 G.allEdge.Clear();
             }
+            LC.Clear();
             if (visualGraph != null)
             {
                 visualGraph.Close();
@@ -260,7 +263,7 @@ namespace Tubes2Stima
             {
                 visualGraph.Close();
             }
-            visualGraph = new F2(ref G);
+            visualGraph = new F2(ref G, ref LC);
             visualGraph.Show();
           
         }
