@@ -11,7 +11,7 @@ File :
 - MainGUI.cs
 - ReadFile.cs
 - Algorithm.cs
-- Form1.cs 
+- VisualizeGraph.cs 
 
 Bahasa Pemrograman : C#
 Namespace yang digunakan : Tubes2Stima
