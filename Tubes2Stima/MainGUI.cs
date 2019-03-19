@@ -23,6 +23,7 @@ namespace Tubes2Stima
         private Button button1, button2, load, reset, solvebtn, closebtn;
         private int Vertexes;
         private Graph G = null;
+        private F2 visualGraph;
 
         public F1()
         {
@@ -207,6 +208,10 @@ namespace Tubes2Stima
 
         private void LoadBox(object source, EventArgs e)
         {
+            if (visualGraph != null)
+            {
+                visualGraph.Close();
+            }
             //show map contents          
             Vertexes = new int();
             G = new Graph();
@@ -235,42 +240,30 @@ namespace Tubes2Stima
             this.command_text.Text = "";
             this.from_map_file.Text = "";
             this.from_command_file.Text = "";
-            G.unvisitAll();
-            G.unColorAll();
-            G.allNode.Clear();
-            G.allEdge.Clear();
+            if (G != null)
+            {
+                G.unvisitAll();
+                G.unColorAll();
+                G.allNode.Clear();
+                G.allEdge.Clear();
+            }
+            if (visualGraph != null)
+            {
+                visualGraph.Close();
+            }
         }
 
         private void Solve_Click(object source, EventArgs e)
         {
             //calling graph-drawing GUI
             //Run Visualization
-            Form form = new Form();
-            Microsoft.Msagl.GraphViewerGdi.GViewer viewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
-            //create a graph object 
-            Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("graph");
-            //create the graph content 
-            foreach(Edge E in G.allEdge)
+            if (visualGraph != null)
             {
-                graph.AddEdge(E.getFrom().ToString(), E.getTo().ToString());
+                visualGraph.Close();
             }
-            /*
-            graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-            graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
-            graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
-            Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
-            c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
-            c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
-            */
-            //bind the graph to the viewer 
-            viewer.Graph = graph;
-            //associate the viewer with the form 
-            form.SuspendLayout();
-            viewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            form.Controls.Add(viewer);
-            form.ResumeLayout();
-            //show the form 
-            form.ShowDialog();
+            visualGraph = new F2(ref G);
+            visualGraph.Show();
+          
         }
 
         private static void CallVisual(ref Graph G1)

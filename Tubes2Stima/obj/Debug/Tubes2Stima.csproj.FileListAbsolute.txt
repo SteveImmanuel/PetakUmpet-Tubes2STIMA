@@ -57,5 +57,5 @@ C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopG
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Microsoft.Msagl.xml
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Microsoft.Msagl.Drawing.xml
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Microsoft.Msagl.GraphViewerGdi.xml
-C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.Form1.resources
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csproj.GenerateResource.cache
+C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.F2.resources
