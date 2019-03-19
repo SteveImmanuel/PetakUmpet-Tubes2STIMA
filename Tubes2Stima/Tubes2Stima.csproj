@@ -74,7 +74,6 @@
     <Compile Include="Algorithm.cs" />
     <Compile Include="BarnesHut.cs" />
     <Compile Include="QuadTree.cs" />
-    <Compile Include="Classes.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="MainGUI.cs">

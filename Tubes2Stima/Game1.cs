@@ -3,13 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Text;
 namespace Tubes2Stima
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class VisualizeGraph : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -18,12 +18,14 @@ namespace Tubes2Stima
         private int width, height;
         private int nNode;
         private bool animateInitGraph;
-        Texture2D t;
-        private List<Body> listBody = new List<Body>();
-        private QuadNode quadTree;
-        private List<Quad> quads = new List<Quad>();
+        Texture2D t, rec;
+        MouseState mouseState;
+        KeyboardState keyboardState;
+        private int previousScrollValue;
+        private int previousXValue;
+        private int previousYValue;
 
-        public Game1(ref Graph _G, int _w, int _h, int _n)
+        public VisualizeGraph(ref Graph _G, int _w, int _h, int _n)
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -31,6 +33,8 @@ namespace Tubes2Stima
             width = _w;
             height = _h;
             nNode = _n;
+            this.IsMouseVisible = true;
+            previousScrollValue = mouseState.ScrollWheelValue;
             graphics.PreferredBackBufferWidth = width;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = height;   // set this value to the desired height of your window
             graphics.ApplyChanges();
@@ -46,12 +50,10 @@ namespace Tubes2Stima
         {
             // TODO: Add your initialization logic here
             this.TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 100.0);
-            animateInitGraph = true;
-            G.ForceDirected(this.width, this.height, false);
-            //for (int i = 0; i < G.getSize(); i++)
-            //{
-            //    listBody.Add(new Body(G.getNode(i)));
-            //}
+            this.IsFixedTimeStep = false;
+            G.generateWeight(G.getNode(0), 0);
+            G.unvisitAll();
+            G.GeneratePosition(this.width, this.height);
             base.Initialize();
         }
 
@@ -65,8 +67,9 @@ namespace Tubes2Stima
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("NodeID");
             t = new Texture2D(GraphicsDevice, 1, 1);
-            t.SetData<Color>(
-                new Color[] { Color.White });
+            t.SetData<Color>(new Color[] { Color.White });
+            rec = new Texture2D(GraphicsDevice, 1, 1);
+            rec.SetData(new[] { Color.White });
             // TODO: use this.Content to load your game content here
         }
 
@@ -77,6 +80,10 @@ namespace Tubes2Stima
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            base.UnloadContent();
+            spriteBatch.Dispose();
+            rec.Dispose();
+            t.Dispose();
         }
 
         /// <summary>
@@ -90,16 +97,67 @@ namespace Tubes2Stima
                 Exit();
 
             // TODO: Add your update logic here
+            mouseState = Mouse.GetState();
+            keyboardState = Keyboard.GetState();
+            int curScrollVal = mouseState.ScrollWheelValue;
+            if (curScrollVal > previousScrollValue)
+            {
+                width += 20;
+                height += 20;
+                previousScrollValue = curScrollVal;
+                G.GeneratePosition(width, height);
+            }
+            else if (curScrollVal < previousScrollValue)
+            {
+                width -= 20;
+                height -= 20;
+                previousScrollValue = curScrollVal;
+                G.GeneratePosition(width, height);
+            }
+            else if (mouseState.RightButton == ButtonState.Pressed)
+            {
+                G.PanPosition(mouseState.X - previousXValue, mouseState.Y - previousYValue);
+                previousXValue = mouseState.X;
+                previousYValue = mouseState.Y;
+            }
+            else if (mouseState.RightButton == ButtonState.Released)
+            {
+                previousXValue = mouseState.X;
+                previousYValue = mouseState.Y;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.S))
+            {
+                Algorithm al = new Algorithm();
+                Boolean found = al.SearchPath(0, G.getNode(0), G.getNode(2), G);
+                Console.WriteLine(found);
+            }
+            else if (keyboardState.IsKeyDown(Keys.Escape))
+            {
+                Exit();
+            }
+
             BarnesHut B = new BarnesHut(0,new Koordinat2D(width/2, height/2), width, height);
-            for (int i = 0; i < G.getSize(); i++)
+            //for (int i = 0; i < G.getNodeSize(); i++)
+            //{
+            //    B.addNodeSimulation(ref G.getNode(i));
+            //}
+            foreach(Node N in G.allNode)
             {
-                B.addNodeSimulation(G.getNode(i));
+                Node NTemp = N;
+                B.addNodeSimulation(ref NTemp);
             }
-            for (int i = 0; i < G.getSize(); i++)
+            foreach (Node N in G.allNode)
             {
-                Koordinat2D force = B.getForce(G.getNode(i), 0.5);
-                G.getNode(i).updatePos(force, 1/20.0);
+                Node NTemp = N;
+                Koordinat2D force = B.getForce(ref NTemp, 0.5);
+                N.updatePos(force, 1 / 20.0);
             }
+            //for (int i = 0; i < G.getNodeSize(); i++)
+            //{
+            //    Koordinat2D force = B.getForce(ref G.getNode(i), 0.5);
+            //    G.getNode(i).updatePos(force, 1/20.0);
+            //}
             G.normalizeKoordinat(width, height);
             base.Update(gameTime);
         }
@@ -112,51 +170,52 @@ namespace Tubes2Stima
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
             spriteBatch.Begin();
-            for (int i = 0; i < nNode; i++)
+            for (int i = 0; i < this.G.getEdgeSize(); i++)
+            {
+                Edge tempEdge = this.G.getEdge(i);
+                Node tempNode1 = G.getNode(tempEdge.getFrom());
+                Node tempNode2 = G.getNode(tempEdge.getTo());
+                DrawLine(
+                    tempNode1.pos.copy(),
+                    tempNode2.pos.copy()
+                , 1, tempEdge.getColor());
+            }
+
+            for (int i = 0; i < this.G.getNodeSize(); i++)
             {
                 Node temp = G.getNode(i);
-                int x = (int)temp.pos.x;
-                int y = (int)temp.pos.y;
-                x = normKoorDraw(0, width, x, 60);
-                y = normKoorDraw(0, height, y, 20);
-                spriteBatch.DrawString(font, "Id : " + G.getNode(i).getID(), new Vector2(x, y), Color.Black);
-                //Gambar garis ke tetangga
-                for (int j = 0; j < temp.neighborSize(); j++)
-                {
-                    Node tetanggaTemp = temp.getNeighbor(j);
-                    int xT = (int)tetanggaTemp.pos.x;
-                    int yT = (int)tetanggaTemp.pos.y;
-                    xT = normKoorDraw(0, width, xT, 60);
-                    yT = normKoorDraw(0, height, yT, 20);
-                    DrawLine(spriteBatch, //draw line
-                        new Vector2(x, y), //start of line
-                        new Vector2(xT, yT) //end of line
-                    );
-                }
+                float x = (float)temp.pos.x;
+                float y = (float)temp.pos.y;
+                float tempPad = (float)(0.5 * Math.Sqrt(Math.Pow(20, 2) * 2));
+                spriteBatch.Draw(rec, new Vector2(x - tempPad, y - tempPad), null, Color.Chocolate, 0f, Vector2.Zero, new Vector2(20, 20), SpriteEffects.None, 0f);
+                spriteBatch.DrawString(font, temp.getID().ToString(), new Vector2(x - tempPad, y - tempPad), Color.Black, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        private void DrawLine(Koordinat2D start, Koordinat2D end, int thick, int colorID)
         {
-            Vector2 edge = end - start;
-            // calculate angle to rotate line
-            float angle =
-                (float)Math.Atan2(edge.Y, edge.X);
-
-
-            sb.Draw(t,
-                new Rectangle(// rectangle defines shape of line and position of start of line
-                    (int)start.X,
-                    (int)start.Y,
-                    (int)edge.Length(), //sb will strech the texture to fill this rectangle
-                    1), //width of line, change this to make thicker line
+            Koordinat2D edge = end - start;
+            float angle = (float)Math.Atan2(edge.y, edge.x);
+            Color color;
+            if (colorID == 0)
+            {
+                color = Color.Black;
+            }
+            else
+            {
+                color = Color.Red;
+            }
+            spriteBatch.Draw(t,
+                new Rectangle(
+                    (int)start.x,
+                    (int)start.y,
+                    (int)edge.magnitude(),
+                    thick), //width of line, change this to make thicker line
                 null,
-                Color.Red, //colour of line
+                color, //colour of line
                 angle,     //angle of line (calulated above)
                 new Vector2(0, 0), // point in line about which to rotate
                 SpriteEffects.None,

@@ -6,6 +6,72 @@ using System.Threading.Tasks;
 
 namespace Tubes2Stima
 {
+
+    public class Koordinat2D
+    {
+        public double x, y;
+        public Koordinat2D(double _x, double _y)
+        {
+            x = _x;
+            y = _y;
+        }
+
+        public void setZero()
+        {
+            x = 0;
+            y = 0;
+        }
+
+        public double magnitude()
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        public void normalize()
+        {
+            double length = this.magnitude();
+            if (Math.Abs(length) > 0.0001)
+            {
+                x = x / length;
+                y = y / length;
+            }
+        }
+
+        public static double distance(Koordinat2D K1, Koordinat2D K2)
+        {
+            return Math.Sqrt(Math.Pow(K1.x - K2.x, 2) + Math.Pow(K1.y - K2.y, 2));
+        }
+
+        public static Koordinat2D operator +(Koordinat2D K1, Koordinat2D K2)
+        {
+            Koordinat2D temp = new Koordinat2D(0, 0);
+            temp.x = K1.x + K2.x;
+            temp.y = K1.y + K2.y;
+            return temp;
+        }
+
+        public static Koordinat2D operator -(Koordinat2D K1, Koordinat2D K2)
+        {
+            Koordinat2D temp = new Koordinat2D(0, 0);
+            temp.x = K1.x - K2.x;
+            temp.y = K1.y - K2.y;
+            return temp;
+        }
+
+        public static Koordinat2D operator *(Koordinat2D K, double d)
+        {
+            Koordinat2D temp = new Koordinat2D(K.x, K.y);
+            temp.x *= d;
+            temp.y *= d;
+            return temp;
+        }
+
+        public Koordinat2D copy()
+        {
+            return new Koordinat2D(x, y);
+        }
+    }
+
     public class BarnesHut
     {
         private BarnesHut[] kuadran;
@@ -93,7 +159,7 @@ namespace Tubes2Stima
            
         }
 
-        public void addNodeSimulation(Node _n)
+        public void addNodeSimulation(ref Node _n)
         {
             //Max Level = 10
             if (level > 10)
@@ -110,7 +176,7 @@ namespace Tubes2Stima
                 {
                     int noKuadran = this.getKuadran(_n.pos);
                     this.allocateKuadran(noKuadran);
-                    kuadran[noKuadran].addNodeSimulation(_n);
+                    kuadran[noKuadran].addNodeSimulation(ref _n);
                     double m = avgMass + 2.0;
                     avgPos.x = (avgPos.x * avgMass + _n.pos.x * 2.0) / m;
                     avgPos.y = (avgPos.y * avgMass + _n.pos.y * 2.0) / m;
@@ -120,11 +186,12 @@ namespace Tubes2Stima
                 {
                     int noKuadranIsi = this.getKuadran(isi[0].pos);
                     this.allocateKuadran(noKuadranIsi);
-                    kuadran[noKuadranIsi].addNodeSimulation(isi[0]);
+                    Node nodeIsi = isi[0];
+                    kuadran[noKuadranIsi].addNodeSimulation(ref nodeIsi);
                     isi.Clear();
                     int noKuadran = this.getKuadran(_n.pos);
                     this.allocateKuadran(noKuadran);
-                    kuadran[noKuadran].addNodeSimulation(_n);
+                    kuadran[noKuadran].addNodeSimulation(ref _n);
                     double m = avgMass + 2.0;
                     avgPos.x = (avgPos.x * avgMass + _n.pos.x * 2.0) / m;
                     avgPos.y = (avgPos.y * avgMass + _n.pos.y * 2.0) / m;
@@ -142,7 +209,7 @@ namespace Tubes2Stima
 
         //Get force antara quadtree ini dengan node _n
         //force akan digunakan untuk update node _n
-        public Koordinat2D getForce(Node _n, double tetha)
+        public Koordinat2D getForce(ref Node _n, double tetha)
         {
             Koordinat2D force = new Koordinat2D(0, 0);
             double fScalar = 0;
@@ -198,7 +265,7 @@ namespace Tubes2Stima
                     {
                         if (B != null)
                         {
-                            force = force + B.getForce(_n, tetha);
+                            force = force + B.getForce(ref _n, tetha);
                         }
                     }
                     return force;

@@ -101,12 +101,62 @@ namespace Tubes2Stima{
         }
 
     }
-    
+
+    public class Edge
+    {
+        private int from;
+        private int to;
+        private int color;
+
+        public Edge(int _from, int _to)
+        {
+            this.from = _from;
+            this.to = _to;
+            this.color = 0;
+        }
+
+        public int getFrom()
+        {
+            return this.from;
+        }
+
+        public int getTo()
+        {
+            return this.to;
+        }
+        public int getColor()
+        {
+            return this.color;
+        }
+
+        public void setFrom(int _from)
+        {
+            this.from = _from;
+        }
+
+        public void setTo(int _to)
+        {
+            this.to = _to;
+        }
+        public void setColor(int _color)
+        {
+            this.color = _color;
+        }
+        public void printInfo()
+        {
+            Console.WriteLine("From={0},To={1},Color={2}", from, to, color);
+        }
+    }
+
     public class Graph{
-        private List<Node> allNode;
+        public List<Node> allNode;
+        private List<Edge> allEdge;
+        private int maxWeight;
 
         public Graph(){
             this.allNode=new List<Node>();
+            this.allEdge = new List<Edge>();
+            this.maxWeight = -1;
         }
 
         public void addNode(Node _node){
@@ -117,6 +167,7 @@ namespace Tubes2Stima{
         {
             this.allNode[awal].addNeighbor(this.allNode[akhir]);
             this.allNode[akhir].addNeighbor(this.allNode[awal]);
+            this.allEdge.Add(new Edge(awal, akhir));
         }
 
         public void unvisitAll(){
@@ -124,6 +175,15 @@ namespace Tubes2Stima{
                 this.allNode[i].setVisited(false);
             }
         }
+
+        public void unColorAll()
+        {
+            for (int i = 0; i < this.allEdge.Count; i++)
+            {
+                this.allEdge[i].setColor(0);
+            }
+        }
+
         public void generateWeight(Node _node,int _weight){
             //Console.WriteLine("ID="+_node.getID());
             _node.setVisited(true);
@@ -139,100 +199,53 @@ namespace Tubes2Stima{
             }
         }
 
-        public Boolean updatePosFD(int width, int height)
+        public void GeneratePosition(int width, int height)
         {
-            /*
-            //Update posisi semua node sesuai algo force directed
-            Boolean allStatic = true;
-            foreach(var n in allNode)
+            if (maxWeight == -1)
             {
-                double vX = 0;
-                double vY = 0;
-                for (int i = 0; i < n.neighborSize(); i++)
-                {
-                    //Hitung gaya hooke (gaya tarik)
-                    double kHooke = 40;
-                    vX += -1 * kHooke * (n.getX() - n.getNeighbor(i).getX()) / 100;
-                    vY += -1 * kHooke * (n.getY() - n.getNeighbor(i).getY()) / 100;
-                }
-                foreach (var nCoul in allNode)
-                {
-                    if(n.getID() != nCoul.getID())
-                    {
-                        //Hitung gaya coulomb (gaya repulsif)
-                        double kCoulomb = 200;///((n.getWeight()+1) * (nCoul.getWeight()+1));
-                        double fCoulomb = kCoulomb / (Math.Pow(n.getX()/100 - nCoul.getX()/100, 2) + Math.Pow(n.getY()/100 - nCoul.getY()/100, 2));
-                        vX += fCoulomb * (n.getX() - nCoul.getX()) / 100;
-                        vY += fCoulomb * (n.getY() - nCoul.getY()) / 100;
-                    }
-                }
-                double epsilon = 10;
-                if (Math.Abs(vX) <= epsilon && Math.Abs(vY) <= epsilon)
-                {
-                    n.setIsStatic(true);
-                }
-                else
-                {
-                    allStatic = false;
-                    n.setIsStatic(false);
-                    n.setvX(vX);
-                    n.setvY(vY);
-                }
+                maxWeight = getMaxWeight();
             }
-            foreach(var n in allNode)
-            {
-                double dt = 1.0/15;
-                n.updatePos(dt);
-            }
-            this.normalizeKoordinat(width, height);
-            return !allStatic;
-            */
-            return true;
-        }
-
-        public void ForceDirected(int width, int height, bool langsung)
-        {
-            
-            //Force Directed Graph Drawing algorithm
-            //kalo langsung=false, hanya menyiapkan nodenya saja
-            //harus panggil updatePosFD tiap tick kalo langsung=false
-            int xAwal = 0;
-            int yAwal = 0;
-            int dx = width / ((int)Math.Sqrt(allNode.Count));
+            int dx = width / (maxWeight + 1);
             int dy = dx;
+            int xAwal = dx / 2;
+            int yAwal = xAwal;
+            List<int> curY = new List<int>();
+            for (int i = 0; i <= maxWeight; i++)
+            {
+                curY.Add(0);
+            }
             foreach (var n in allNode)
             {
-                n.pos = new Koordinat2D(xAwal, yAwal);
-                xAwal += dx;
-                if (xAwal > width)
-                {
-                    xAwal = 0;
-                    yAwal += dy;
-                }
+                double x = (xAwal + n.getWeight() * dx);
+                double y = (yAwal + curY[n.getWeight()] * dy);
+                n.pos = new Koordinat2D(x, y);
+                curY[n.getWeight()]++;
+                //Console.WriteLine("ID={0},X={1},Y={2}", n.getID(), n.pos.x, n.pos.y);
             }
-            /*
-            //Console.WriteLine("Done set 0 semua");
-            if (langsung)
+
+        }
+
+        public void PanPosition(int deltaX,int deltaY)
+        {
+            Koordinat2D delta = new Koordinat2D(deltaX, deltaY);
+            foreach (var n in allNode)
             {
-                int iterasi = 1000;
-                Boolean temp = false;
-                while (!temp && iterasi > 0)
-                {
-                    /*
-                    Console.WriteLine("Lagi Simulasi");
-                    foreach (var n in allNode)
-                    {
-                        Console.Write("ID= " + n.getID());
-                        Console.Write(", X= " + n.getX());
-                        Console.WriteLine(", Y= " + n.getY());
-                    }
-                    
-                    iterasi -= 1;
-                    temp = this.updatePosFD(width, height);
-                }
-                this.normalizeKoordinat(width, height);
+                n.pos = n.pos + delta;
             }
-            */
+        }
+
+        public int getMaxWeight()
+        {
+            //hanya dipanggil jika allnode sudah berisi
+            int max = allNode[0].getWeight();
+            for (int i = 0; i < allNode.Count; i++)
+            {
+                if (allNode[i].getWeight() > max)
+                {
+                    max = allNode[i].getWeight();
+                }
+            }
+            return max;
         }
 
         public void normalizeKoordinat(int width, int height)
@@ -278,9 +291,45 @@ namespace Tubes2Stima{
         public Node getNode(int i){
             return this.allNode[i];
         }
-        
-        public int getSize(){
-            return allNode.Count;
+
+        public Edge getEdge(int i)
+        {
+            return this.allEdge[i];
+        }
+
+        public int getNodeSize()
+        {
+            return this.allNode.Count;
+        }
+
+        public int getEdgeSize()
+        {
+            return this.allEdge.Count;
+        }
+
+        public Edge getEdge(int from, int to)
+        {
+            Boolean found = false;
+            int i = 0;
+            while (i < allEdge.Count && !found)
+            {
+                if (allEdge[i].getFrom() == from && allEdge[i].getTo() == to || allEdge[i].getFrom() == to && allEdge[i].getTo() == from)
+                {
+                    found = true;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            if (found)
+            {
+                return allEdge[i];
+            }
+            else
+            {
+                return new Edge(-1, -1);
+            }
         }
     }
 }
