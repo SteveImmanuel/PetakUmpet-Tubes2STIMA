@@ -12,6 +12,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Tubes2Stima
 {
@@ -21,7 +22,8 @@ namespace Tubes2Stima
         private TextBox map_text, command_text, from_map_file, from_command_file;
         private Button button1, button2, load, reset, solvebtn, closebtn;
         private int Vertexes;
-        private Graph G;
+        private Graph G = null;
+
         public F1()
         {
             MainGUI();
@@ -204,7 +206,7 @@ namespace Tubes2Stima
 
         private void LoadBox(object source, EventArgs e)
         {
-            //show map contents
+            //show map contents          
             Vertexes = new int();
             G = new Graph();
             this.from_map_file.Text = ""; //assume correct input everytime
@@ -234,16 +236,48 @@ namespace Tubes2Stima
             this.from_command_file.Text = "";
             G.unvisitAll();
             G.unColorAll();
+            G.allNode.Clear();
+            G.allEdge.Clear();
         }
 
         private void Solve_Click(object source, EventArgs e)
         {
             //calling graph-drawing GUI
             //Run Visualization
-            using (var visualGraph = new VisualizeGraph(ref G, 500, 500,this.Vertexes))
+            Form form = new Form();
+            Microsoft.Msagl.GraphViewerGdi.GViewer viewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
+            //create a graph object 
+            Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("graph");
+            //create the graph content 
+            foreach(Edge E in G.allEdge)
             {
-                visualGraph.Run();
+                graph.AddEdge(E.getFrom().ToString(), E.getTo().ToString());
             }
+            /*
+            graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
+            graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
+            Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
+            c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
+            c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
+            */
+            //bind the graph to the viewer 
+            viewer.Graph = graph;
+            //associate the viewer with the form 
+            form.SuspendLayout();
+            viewer.Dock = System.Windows.Forms.DockStyle.Fill;
+            form.Controls.Add(viewer);
+            form.ResumeLayout();
+            //show the form 
+            form.ShowDialog();
+        }
+
+        private static void CallVisual(ref Graph G1)
+        {
+            //using (var visualGraph = new VisualizeGraph(ref G1, 500, 500))
+            //{
+            //    visualGraph.Run();
+            //}
         }
 
         private void Close_Click(object source, EventArgs e)
@@ -254,7 +288,7 @@ namespace Tubes2Stima
         [STAThread]
         public static void Main(String[] args)
         {
-            Application.Run(new F1());
+                Application.Run(new F1());
         }
 
     }

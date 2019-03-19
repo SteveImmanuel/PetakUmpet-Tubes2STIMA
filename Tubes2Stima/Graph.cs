@@ -11,6 +11,72 @@ using System.Collections.Generic;
 using System;
 
 namespace Tubes2Stima{
+
+    public class Koordinat2D
+    {
+        public double x, y;
+        public Koordinat2D(double _x, double _y)
+        {
+            x = _x;
+            y = _y;
+        }
+
+        public void setZero()
+        {
+            x = 0;
+            y = 0;
+        }
+
+        public double magnitude()
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        public void normalize()
+        {
+            double length = this.magnitude();
+            if (Math.Abs(length) > 0.0001)
+            {
+                x = x / length;
+                y = y / length;
+            }
+        }
+
+        public static double distance(Koordinat2D K1, Koordinat2D K2)
+        {
+            return Math.Sqrt(Math.Pow(K1.x - K2.x, 2) + Math.Pow(K1.y - K2.y, 2));
+        }
+
+        public static Koordinat2D operator +(Koordinat2D K1, Koordinat2D K2)
+        {
+            Koordinat2D temp = new Koordinat2D(0, 0);
+            temp.x = K1.x + K2.x;
+            temp.y = K1.y + K2.y;
+            return temp;
+        }
+
+        public static Koordinat2D operator -(Koordinat2D K1, Koordinat2D K2)
+        {
+            Koordinat2D temp = new Koordinat2D(0, 0);
+            temp.x = K1.x - K2.x;
+            temp.y = K1.y - K2.y;
+            return temp;
+        }
+
+        public static Koordinat2D operator *(Koordinat2D K, double d)
+        {
+            Koordinat2D temp = new Koordinat2D(K.x, K.y);
+            temp.x *= d;
+            temp.y *= d;
+            return temp;
+        }
+
+        public Koordinat2D copy()
+        {
+            return new Koordinat2D(x, y);
+        }
+    }
+
     public class Node{
         private List<Node> neighbor;
         public Koordinat2D pos, v, a;
@@ -148,9 +214,10 @@ namespace Tubes2Stima{
         }
     }
 
-    public class Graph{
+    public class Graph
+    {
         public List<Node> allNode;
-        private List<Edge> allEdge;
+        public List<Edge> allEdge;
         private int maxWeight;
 
         public Graph(){
