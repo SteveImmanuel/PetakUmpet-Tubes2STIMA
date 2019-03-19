@@ -111,11 +111,13 @@ namespace Tubes2Stima{
     {
         private int from;
         private int to;
+        private int color;
         
         public Edge(int _from, int _to)
         {
             this.from = _from;
             this.to = _to;
+            this.color = 0;
         }
 
         public int getFrom()
@@ -127,6 +129,10 @@ namespace Tubes2Stima{
         {
             return this.to;
         }
+        public int getColor()
+        {
+            return this.color;
+        }
 
         public void setFrom(int _from)
         {
@@ -136,6 +142,14 @@ namespace Tubes2Stima{
         public void setTo(int _to)
         {
             this.to = _to;
+        }
+        public void setColor(int _color)
+        {
+            this.color = _color;
+        }
+        public void printInfo()
+        {
+            Console.WriteLine("From={0},To={1},Color={2}", from, to, color);
         }
     }
 
@@ -167,6 +181,15 @@ namespace Tubes2Stima{
                 this.allNode[i].setVisited(false);
             }
         }
+
+        public void unColorAll()
+        {
+            for (int i = 0; i < this.allEdge.Count; i++)
+            {
+                this.allEdge[i].setColor(0);
+            }
+        }
+
         public void generateWeight(Node _node,int _weight){
             //Console.WriteLine("ID="+_node.getID());
             _node.setVisited(true);
@@ -202,8 +225,18 @@ namespace Tubes2Stima{
                 n.setX(xAwal + n.getWeight() * dx);
                 n.setY(yAwal + curY[n.getWeight()] * dy);
                 curY[n.getWeight()]++;
+                //Console.WriteLine("ID={0},X={1},Y={2}", n.getID(), n.getX(), n.getY());
             }
 
+        }
+
+        public void PanPosition(int deltaX,int deltaY)
+        {
+            foreach (var n in allNode)
+            {
+                n.setX(n.getX()+deltaX);
+                n.setY(n.getY()+deltaY);
+            }
         }
 
         public int getMaxWeight()
@@ -235,6 +268,30 @@ namespace Tubes2Stima{
         public int getEdgeSize()
         {
             return this.allEdge.Count;
+        }
+
+        public Edge getEdge(int from,int to)
+        {
+            Boolean found = false;
+            int i = 0;
+            while (i < allEdge.Count && !found)
+            {
+                if(allEdge[i].getFrom()==from&& allEdge[i].getTo() == to|| allEdge[i].getFrom() == to && allEdge[i].getTo() == from)
+                {
+                    found = true;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            if (found){
+                return allEdge[i];
+            }
+            else
+            {
+                return new Edge(-1, -1);
+            }
         }
     }
 }

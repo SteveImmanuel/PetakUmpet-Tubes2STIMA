@@ -72,7 +72,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Algorithm.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="VisualizeGraph.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="MainGUI.cs">
       <SubType>Form</SubType>

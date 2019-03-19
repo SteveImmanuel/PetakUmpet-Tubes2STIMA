@@ -166,7 +166,7 @@ namespace Tubes2Stima {
             var fileContent = string.Empty;
             var filePath = string.Empty;
             using (OpenFileDialog ofd = new OpenFileDialog()) {
-                ofd.InitialDirectory = Directory.GetCurrentDirectory();
+                ofd.InitialDirectory = System.IO.Path.GetFullPath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "../../../../../InputFiles"));
                 ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
                 ofd.FilterIndex = 2;
                 ofd.RestoreDirectory = true;
@@ -181,7 +181,7 @@ namespace Tubes2Stima {
             var fileContent = string.Empty;
             var filePath = string.Empty;
             using (OpenFileDialog ofd = new OpenFileDialog()) {
-                ofd.InitialDirectory = Directory.GetCurrentDirectory();
+                ofd.InitialDirectory = System.IO.Path.GetFullPath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "../../../../../InputFiles"));
                 ofd.Filter = "txt files (*.txt)|*.txt|All Files (*.*)|*.*";
                 ofd.FilterIndex = 2;
                 ofd.RestoreDirectory = true;
@@ -219,14 +219,16 @@ namespace Tubes2Stima {
             this.command_text.Text = "";
             this.from_map_file.Text = "";
             this.from_command_file.Text = "";
+            G.unvisitAll();
+            G.unColorAll();
         }
         
         private void Solve_Click(object source, EventArgs e){
             //calling graph-drawing GUI
             //Run Visualization
-            using (var game = new Game1(ref G, 500, 500))
+            using (var visualGraph = new VisualizeGraph(ref G, 500, 500))
             {
-                game.Run();
+                visualGraph.Run();
             }
         }
         

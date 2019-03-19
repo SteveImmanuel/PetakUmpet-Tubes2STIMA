@@ -52,7 +52,7 @@ namespace Tubes2Stima{
             int c=Convert.ToInt32(temp2[2]);
             
             watch.Start();
-            if(al.SearchPath(a,g.getNode(b-1),g.getNode(c-1))){
+            if(al.SearchPath(a,g.getNode(b-1),g.getNode(c-1),g)){
                 Console.WriteLine("YES");
             }else{
                 Console.WriteLine("NO");
