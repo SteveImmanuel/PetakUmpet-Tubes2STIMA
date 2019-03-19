@@ -14,55 +14,55 @@ namespace Tubes2Stima
 {
     class Algorithm
     {
-        public Boolean SearchPath(int type, Node to, Node from, Graph g)
+        public Boolean SearchPath(int type, Node to, Node from, List<Node> path)
         {
-            if (type == 0)
-            {
-                from.setVisited(true);
-                if (from.neighborSize() == 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    int i = 0;
-                    Boolean found = false;
-                    do
-                    {
-                        if (from.getNeighbor(i).getWeight() <= from.getWeight() && !from.getNeighbor(i).getVisited())
-                        {
-                            if (from.getNeighbor(i) == to)
-                            {
-                                Edge tempEdge = g.getEdge(from.getID() - 1, from.getNeighbor(i).getID() - 1);
-                                tempEdge.setColor(1);
-                                tempEdge.printInfo();
-                                found = true;
-                            }
-                            else
-                            {
-                                Edge tempEdge = g.getEdge(from.getID() - 1, from.getNeighbor(i).getID() - 1);
-                                tempEdge.setColor(1);
-                                tempEdge.printInfo();
-                                found = SearchPath(type, to, from.getNeighbor(i), g);
-                                if (!found)
-                                {
-                                    tempEdge.setColor(0);
-                                }
-                            }
-                        }
-                        i++;
-                    } while (i < from.neighborSize() && !found);
-                    return found;
-                }
-            }
-            else if (type == 1)
+            from.setVisited(true);
+            if (from.neighborSize() == 0)
             {
                 return false;
-
             }
             else
             {
-                return false;
+                path.Add(from);
+                // for(int j=0;j<path.Count;j++){
+                //     Console.Write(path[j].getID()+" ");
+                // }
+                // Console.WriteLine();
+                int initialSize = path.Count;
+                Boolean found = false;
+                int i = 0;
+                do
+                {
+                    if (path.Count > initialSize)
+                    {
+                        // Console.Write("initial size={0},sizenow={1}",initialSize,path.Count);
+                        path.RemoveRange(initialSize, path.Count - initialSize);
+                        // for(int j=0;j<path.Count;j++){
+                        //     Console.Write(path[j].getID()+" ");
+                        // }
+                        // Console.WriteLine();
+                    }
+                    if (!from.getNeighbor(i).getVisited())
+                    {
+                        if ((type == 0 && from.getNeighbor(i).getWeight() < from.getWeight()) || (type == 1 && from.getNeighbor(i).getWeight() > from.getWeight()))
+                        {
+                            if (from.getNeighbor(i) == to)
+                            {
+                                found = true;
+                                path.Add(from.getNeighbor(i));
+                            }
+                            else
+                            {
+                                found = SearchPath(type, to, from.getNeighbor(i), path);
+                            }
+                        }
+                    }
+                    i++;
+                } while (i < from.neighborSize() && !found);
+                // if(!found){
+                //     path.Clear();
+                // }
+                return found;
             }
         }
     }

@@ -127,14 +127,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tubes2Stima.exe" size="579544">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tubes2Stima.exe" size="580568">
       <assemblyIdentity name="Tubes2Stima" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>54ZcPMnA7GTkf65t81hvqJd4nkT4z+nFrPzJ0BF+8PE=</dsig:DigestValue>
+        <dsig:DigestValue>lIEEwQJWFj4mKFT4lbjVEnXrazG2gJ6FZ9m4ooUTVL8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
