@@ -226,7 +226,7 @@ namespace Tubes2Stima
 
             //show command contents
             int comnum = new int();
-            List<Command> LC = new List<Command>();
+            LC.Clear();
             //assume correct input everytime
             ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
             StringBuilder tempCom = new StringBuilder();

@@ -31,12 +31,15 @@ namespace Tubes2Stima
         private void Form1_Load(object sender, EventArgs e)
         {
             viewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
+            viewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
             Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("graph");
+            graph.LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
             foreach (Edge E in G.allEdge)
             {
                 graph.AddEdge((E.getFrom() + 1).ToString(), (E.getTo() + 1).ToString());
             }
-            foreach (var E in graph.Edges)
+            viewer.Graph = graph;
+            foreach (var E in viewer.Graph.Edges)
             {
                 Tuple<int,int> key = new Tuple<int,int>(Int32.Parse(E.Source) - 1, Int32.Parse(E.Target) - 1);
                 dictEdge.Add(key, E);
@@ -44,17 +47,13 @@ namespace Tubes2Stima
             }
             viewer.ToolBarIsVisible = false;
             viewer.PanButtonPressed = true;
-            viewer.Graph = graph;
             Microsoft.Msagl.Drawing.Node nodeRaja = viewer.Graph.FindNode("1");
             if (nodeRaja != null)
             {
                 nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
                 nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Fuchsia;
             }
-            graph.LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
-            viewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
-            viewer.Graph = graph;
-            viewer.Size = new Size(586, 500);
+            viewer.Size = new Size(780, 500);
             viewer.Location = new Point(0, 0);
             this.Controls.Add(viewer);
             foreach(Command C in LC)
