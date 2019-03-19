@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -131,7 +132,10 @@ namespace Tubes2Stima
                 Boolean found = false;
                 try
                 {
-                    found=al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                    int stackSize = 1024 * 1024 * 15;
+                    Thread t = new Thread(() => { found = al.SearchPath(type, G.getNode(to), G.getNode(from), path); }, stackSize);
+                    t.Start();
+                    t.Join();
                 }
                 catch
                 {
@@ -215,7 +219,10 @@ namespace Tubes2Stima
                 Boolean found = false;
                 try
                 {
-                    al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                    int stackSize = 1024 * 1024 * 15;
+                    Thread t = new Thread(() =>{found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);}, stackSize);
+                    t.Start();
+                    t.Join();
                 }
                 catch
                 {

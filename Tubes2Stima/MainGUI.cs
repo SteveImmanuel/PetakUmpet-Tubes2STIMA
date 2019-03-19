@@ -287,13 +287,6 @@ namespace Tubes2Stima
 
         [STAThread]
         public static void Main(String[] args){
-            int stackSize = 1024*1024*15;
-            Thread thread = new Thread(new ThreadStart(mainThread), stackSize);
-            thread.Start();
-        }
-
-        public static void mainThread()
-        {
             Application.Run(new F1());
         }
 
