@@ -16,7 +16,7 @@ namespace Tubes2Stima
         private Microsoft.Msagl.GraphViewerGdi.GViewer viewer;
         private List<Node> path = new List<Node>();
         private List<Command> LC;
-        private Microsoft.Msagl.Drawing.Edge[,] adjMat;
+        private Dictionary<Tuple<int,int>,Microsoft.Msagl.Drawing.Edge> dictEdge;
 
         public F2(ref Graph _G, ref List<Command> _LC)
         {
@@ -24,7 +24,7 @@ namespace Tubes2Stima
             InitializeComponent();
             G = _G;
             LC = _LC;
-            adjMat = new Microsoft.Msagl.Drawing.Edge[G.getNodeSize(), G.getNodeSize()];
+            dictEdge = new Dictionary<Tuple<int, int>, Microsoft.Msagl.Drawing.Edge>();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -37,8 +37,8 @@ namespace Tubes2Stima
             }
             foreach (var E in graph.Edges)
             {
-                adjMat[Int32.Parse(E.Source) - 1, Int32.Parse(E.Target) - 1] = E;
-                adjMat[Int32.Parse(E.Target) - 1, Int32.Parse(E.Source) - 1] = E;
+                Tuple<int,int> key = new Tuple<int,int>(Int32.Parse(E.Source) - 1, Int32.Parse(E.Target) - 1);
+                dictEdge.Add(key, E);
                 E.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
             }
             viewer.ToolBarIsVisible = false;
@@ -112,7 +112,16 @@ namespace Tubes2Stima
                     tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Transparent;
                     if (i < path.Count - 1)
                     {
-                        adjMat[path[i].getID() - 1, path[i + 1].getID() - 1].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                        Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
+                        Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                        if (dictEdge.ContainsKey(key))
+                        {
+                            dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                        }
+                        else
+                        {
+                            dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                        }
                     }
                 }
                 path.Clear();
@@ -129,7 +138,16 @@ namespace Tubes2Stima
                         tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
                         if (i < path.Count - 1)
                         {
-                            adjMat[path[i].getID() - 1, path[i + 1].getID() - 1].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                            Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
+                            Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                            if (dictEdge.ContainsKey(key))
+                            {
+                                dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                            }
+                            else
+                            {
+                                dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                            }
                         }
                     }
                 }
@@ -169,12 +187,15 @@ namespace Tubes2Stima
                     tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Transparent;
                     if (i < path.Count - 1)
                     {
-                        foreach (var E in viewer.Graph.Edges)
+                        Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
+                        Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                        if (dictEdge.ContainsKey(key))
                         {
-                            if (E.Source == path[i].getID().ToString() && E.Target == path[i + 1].getID().ToString() || E.Target == path[i].getID().ToString() && E.Source == path[i + 1].getID().ToString())
-                            {
-                                E.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
-                            }
+                            dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                        }
+                        else
+                        {
+                            dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
                         }
                     }
                 }
@@ -190,15 +211,17 @@ namespace Tubes2Stima
                         Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
                         tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
                         tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
-
                         if (i < path.Count - 1)
                         {
-                            foreach (var E in viewer.Graph.Edges)
+                            Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
+                            Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                            if (dictEdge.ContainsKey(key))
                             {
-                                if (E.Source == path[i].getID().ToString() && E.Target == path[i + 1].getID().ToString() || E.Target == path[i].getID().ToString() && E.Source == path[i + 1].getID().ToString())
-                                {
-                                    E.Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                                }
+                                dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                            }
+                            else
+                            {
+                                dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
                             }
                         }
                     }
@@ -211,7 +234,7 @@ namespace Tubes2Stima
                 if (nodeRaja != null)
                 {
                     nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
-                    nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Fuchsia;
+                    nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.LightBlue;
                 }
                 G.unvisitAll();
                 this.Refresh();

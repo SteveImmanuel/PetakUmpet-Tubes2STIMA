@@ -46,10 +46,10 @@
             // 
             this.tabControl1.Controls.Add(this.query_file);
             this.tabControl1.Controls.Add(this.query_input);
-            this.tabControl1.Location = new System.Drawing.Point(500, 10);
+            this.tabControl1.Location = new System.Drawing.Point(500, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(470, 431);
+            this.tabControl1.Size = new System.Drawing.Size(485, 455);
             this.tabControl1.TabIndex = 1;
             // 
             // query_file
@@ -59,7 +59,7 @@
             this.query_file.Location = new System.Drawing.Point(4, 25);
             this.query_file.Name = "query_file";
             this.query_file.Padding = new System.Windows.Forms.Padding(3);
-            this.query_file.Size = new System.Drawing.Size(462, 402);
+            this.query_file.Size = new System.Drawing.Size(477, 426);
             this.query_file.TabIndex = 1;
             this.query_file.Text = "Query (File)";
             this.query_file.UseVisualStyleBackColor = true;
@@ -92,7 +92,7 @@
             this.query_input.Location = new System.Drawing.Point(4, 25);
             this.query_input.Name = "query_input";
             this.query_input.Padding = new System.Windows.Forms.Padding(3);
-            this.query_input.Size = new System.Drawing.Size(462, 402);
+            this.query_input.Size = new System.Drawing.Size(477, 426);
             this.query_input.TabIndex = 2;
             this.query_input.Text = "Query (Input)";
             this.query_input.UseVisualStyleBackColor = true;
@@ -103,7 +103,7 @@
             this.query_input_textbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.query_input_textbox.Location = new System.Drawing.Point(6, 6);
             this.query_input_textbox.Name = "query_input_textbox";
-            this.query_input_textbox.Size = new System.Drawing.Size(450, 59);
+            this.query_input_textbox.Size = new System.Drawing.Size(450, 34);
             this.query_input_textbox.TabIndex = 3;
             // 
             // add_query_input
@@ -150,6 +150,7 @@
             this.tabControl1.ResumeLayout(false);
             this.query_file.ResumeLayout(false);
             this.query_input.ResumeLayout(false);
+            this.query_input.PerformLayout();
             this.ResumeLayout(false);
 
         }
