@@ -54,7 +54,6 @@ namespace Tubes2Stima
             Console.WriteLine("Done");
             for (int i = 0; i < g.getNodeSize(); i++)
             {
-                g.getNode(i).printInfo();
                 Console.WriteLine();
             }
             var temp2 = Console.ReadLine().Split(' ');

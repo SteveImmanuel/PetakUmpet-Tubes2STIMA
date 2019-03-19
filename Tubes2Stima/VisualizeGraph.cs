@@ -53,7 +53,7 @@ namespace Tubes2Stima
             graph.LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
             viewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
             viewer.Graph = graph;
-            viewer.Size = new Size(500, 500);
+            viewer.Size = new Size(586, 500);
             viewer.Location = new Point(0, 0);
             this.Controls.Add(viewer);
             foreach(Command C in LC)
@@ -84,7 +84,7 @@ namespace Tubes2Stima
                         MessageBox.Show("Tipe awal command hanya 0 atau 1", "Error add query", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     
-                }catch(InvalidCastException err)
+                }catch
                 {
                     MessageBox.Show("Query harus 3 integer", "Error add query", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -128,7 +128,15 @@ namespace Tubes2Stima
                 Algorithm al = new Algorithm();
                 G.generateWeight(G.getNode(0), 0);
                 G.unvisitAll();
-                Boolean found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                Boolean found = false;
+                try
+                {
+                    found=al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                }
+                catch
+                {
+                    MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 if (found)
                 {
                     for (int i = 0; i < path.Count; i++)
@@ -161,6 +169,7 @@ namespace Tubes2Stima
                     nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
                     nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Fuchsia;
                 }
+                
                 G.unvisitAll();
                 this.Refresh();
             }
@@ -203,7 +212,15 @@ namespace Tubes2Stima
                 Algorithm al = new Algorithm();
                 G.generateWeight(G.getNode(0), 0);
                 G.unvisitAll();
-                Boolean found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                Boolean found = false;
+                try
+                {
+                    al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                }
+                catch
+                {
+                    MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 if (found)
                 {
                     for (int i = 0; i < path.Count; i++)

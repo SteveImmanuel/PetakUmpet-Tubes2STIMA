@@ -225,13 +225,20 @@ namespace Tubes2Stima
             int comnum = new int();
             LC.Clear();
             this.from_command_file.Text = ""; //assume correct input everytime
-            ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
-            this.from_command_file.Text += comnum;
-            for (int i = 0; i < comnum; i++)
+            try
             {
-                this.from_command_file.Text += "\r\n" + LC[i].getApproach();
-                this.from_command_file.Text += " " + LC[i].getX();
-                this.from_command_file.Text += " " + LC[i].getY();
+                ReadFile.ReadCommand(this.command_text.Text, ref comnum, ref LC);
+                this.from_command_file.Text += comnum;
+                for (int i = 0; i < comnum; i++)
+                {
+                    this.from_command_file.Text += "\r\n" + LC[i].getApproach();
+                    this.from_command_file.Text += " " + LC[i].getX();
+                    this.from_command_file.Text += " " + LC[i].getY();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Command tidak valid", "Error Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -244,7 +251,6 @@ namespace Tubes2Stima
             if (G != null)
             {
                 G.unvisitAll();
-                G.unColorAll();
                 G.allNode.Clear();
                 G.allEdge.Clear();
             }
