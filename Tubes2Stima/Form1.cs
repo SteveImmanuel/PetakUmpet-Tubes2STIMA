@@ -14,12 +14,14 @@ namespace Tubes2Stima
     {
         private Graph G;
         private Microsoft.Msagl.GraphViewerGdi.GViewer viewer;
+        private Microsoft.Msagl.Drawing.Edge[,] adjMat;
 
         public F2(ref Graph _G)
         {
 
             InitializeComponent();
             G = _G;
+            adjMat = new Microsoft.Msagl.Drawing.Edge [G.getNodeSize(), G.getNodeSize()];
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -32,16 +34,10 @@ namespace Tubes2Stima
             }
             foreach(var E in graph.Edges)
             {
+                adjMat[Int32.Parse(E.Source) - 1, Int32.Parse(E.Target) - 1] = E;
+                adjMat[Int32.Parse(E.Target) - 1, Int32.Parse(E.Source) - 1] = E;
                 E.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
             }
-            /*
-            graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-            graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
-            graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
-            Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
-            c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
-            c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
-            */
             graph.LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
             viewer.ToolBarIsVisible = false;
             viewer.PanButtonPressed = true;
@@ -78,18 +74,17 @@ namespace Tubes2Stima
                     Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
                     tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
                     tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
-
-
-                    //yang ini bagian super stupid karena gw ga ketemu getedge
+                    
                     if (i < path.Count - 1)
                     {
-                        foreach (var E in viewer.Graph.Edges)
-                        {
-                            if (E.Source==path[i].getID().ToString()&& E.Target == path[i+1].getID().ToString()|| E.Target == path[i].getID().ToString() && E.Source == path[i + 1].getID().ToString())
-                            {
-                                E.Attr.Color= Microsoft.Msagl.Drawing.Color.Red;
-                            }
-                        }
+                        adjMat[path[i].getID()-1, path[i+1].getID() - 1].Attr.Color= Microsoft.Msagl.Drawing.Color.Red;
+                        //foreach (var E in viewer.Graph.Edges)
+                        //{
+                        //    if (E.Source==path[i].getID().ToString()&& E.Target == path[i+1].getID().ToString()|| E.Target == path[i].getID().ToString() && E.Source == path[i + 1].getID().ToString())
+                        //    {
+                        //        E.Attr.Color= Microsoft.Msagl.Drawing.Color.Red;
+                        //    }
+                        //}
                     }
                 }
             }

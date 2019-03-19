@@ -162,7 +162,7 @@ namespace Tubes2Stima{
             Console.WriteLine("NeighborSize="+this.neighborSize());
             Console.WriteLine("Weight="+this.getWeight());
             Console.WriteLine("Visit="+this.getVisited());
-            Console.Write(", X= " + this.pos.x);
+            Console.Write("X= " + this.pos.x);
             Console.WriteLine(", Y= " + this.pos.y);
         }
 
@@ -172,13 +172,11 @@ namespace Tubes2Stima{
     {
         private int from;
         private int to;
-        private int color;
 
         public Edge(int _from, int _to)
         {
             this.from = _from;
             this.to = _to;
-            this.color = 0;
         }
 
         public int getFrom()
@@ -190,10 +188,6 @@ namespace Tubes2Stima{
         {
             return this.to;
         }
-        public int getColor()
-        {
-            return this.color;
-        }
 
         public void setFrom(int _from)
         {
@@ -204,13 +198,9 @@ namespace Tubes2Stima{
         {
             this.to = _to;
         }
-        public void setColor(int _color)
-        {
-            this.color = _color;
-        }
         public void printInfo()
         {
-            Console.WriteLine("From={0},To={1},Color={2}", from, to, color);
+            Console.WriteLine("From={0},To={1}", from, to);
         }
     }
 
@@ -218,12 +208,10 @@ namespace Tubes2Stima{
     {
         public List<Node> allNode;
         public List<Edge> allEdge;
-        private int maxWeight;
 
         public Graph(){
             this.allNode=new List<Node>();
             this.allEdge = new List<Edge>();
-            this.maxWeight = -1;
         }
 
         public void addNode(Node _node){
@@ -243,16 +231,7 @@ namespace Tubes2Stima{
             }
         }
 
-        public void unColorAll()
-        {
-            for (int i = 0; i < this.allEdge.Count; i++)
-            {
-                this.allEdge[i].setColor(0);
-            }
-        }
-
         public void generateWeight(Node _node,int _weight){
-            //Console.WriteLine("ID="+_node.getID());
             _node.setVisited(true);
             if(_node.getID()==0){
                 _node.setWeight(0);
@@ -266,95 +245,6 @@ namespace Tubes2Stima{
             }
         }
 
-        public void GeneratePosition(int width, int height)
-        {
-            if (maxWeight == -1)
-            {
-                maxWeight = getMaxWeight();
-            }
-            int dx = width / (maxWeight + 1);
-            int dy = dx;
-            int xAwal = dx / 2;
-            int yAwal = xAwal;
-            List<int> curY = new List<int>();
-            for (int i = 0; i <= maxWeight; i++)
-            {
-                curY.Add(0);
-            }
-            foreach (var n in allNode)
-            {
-                double x = (xAwal + n.getWeight() * dx);
-                double y = (yAwal + curY[n.getWeight()] * dy);
-                n.pos = new Koordinat2D(x, y);
-                curY[n.getWeight()]++;
-                //Console.WriteLine("ID={0},X={1},Y={2}", n.getID(), n.pos.x, n.pos.y);
-            }
-
-        }
-
-        public void PanPosition(int deltaX,int deltaY)
-        {
-            Koordinat2D delta = new Koordinat2D(deltaX, deltaY);
-            foreach (var n in allNode)
-            {
-                n.pos = n.pos + delta;
-            }
-        }
-
-        public int getMaxWeight()
-        {
-            //hanya dipanggil jika allnode sudah berisi
-            int max = allNode[0].getWeight();
-            for (int i = 0; i < allNode.Count; i++)
-            {
-                if (allNode[i].getWeight() > max)
-                {
-                    max = allNode[i].getWeight();
-                }
-            }
-            return max;
-        }
-
-        public void normalizeKoordinat(int width, int height)
-        {
-            //Normalisasi Koordinat agar berada di rentang 0-width, 0-height
-            //Cari maxX, maxY, minX, minY
-            double maxX, maxY, minX, minY;
-            maxX = getNode(0).pos.x;
-            maxY = getNode(0).pos.y;
-            minX = maxX;
-            minY = maxY;
-            foreach (var n in allNode)
-            {
-                if (n.pos.x > maxX)
-                {
-                    maxX = n.pos.x;
-                }
-                else if (n.pos.x < minX)
-                {
-                    minX = n.pos.x;
-                }
-
-                if (n.pos.y > maxY)
-                {
-                    maxY = n.pos.y;
-                }
-                else if (n.pos.y < minY)
-                {
-                    minY = n.pos.y;
-                }
-            }
-            //Console.WriteLine("Normalize Koordinat");
-            foreach (var n in allNode)
-            {
-                double x = (width * (n.pos.x - minX) / (maxX - minX));
-                double y = (height * (n.pos.y - minY) / (maxY - minY));
-                n.pos = new Koordinat2D(x, y);
-                //Console.Write("ID= " + n.getID());
-                //Console.Write(", X= " + n.getX());
-                //Console.WriteLine(", Y= " + n.getY());
-            }
-        }
         public Node getNode(int i){
             return this.allNode[i];
         }
@@ -372,31 +262,6 @@ namespace Tubes2Stima{
         public int getEdgeSize()
         {
             return this.allEdge.Count;
-        }
-
-        public Edge getEdge(int from, int to)
-        {
-            Boolean found = false;
-            int i = 0;
-            while (i < allEdge.Count && !found)
-            {
-                if (allEdge[i].getFrom() == from && allEdge[i].getTo() == to || allEdge[i].getFrom() == to && allEdge[i].getTo() == from)
-                {
-                    found = true;
-                }
-                else
-                {
-                    i++;
-                }
-            }
-            if (found)
-            {
-                return allEdge[i];
-            }
-            else
-            {
-                return new Edge(-1, -1);
-            }
         }
     }
 }

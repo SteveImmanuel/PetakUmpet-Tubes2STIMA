@@ -243,7 +243,6 @@ namespace Tubes2Stima
             if (G != null)
             {
                 G.unvisitAll();
-                G.unColorAll();
                 G.allNode.Clear();
                 G.allEdge.Clear();
             }
