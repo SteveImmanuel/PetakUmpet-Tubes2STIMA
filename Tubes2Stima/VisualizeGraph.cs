@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace Tubes2Stima
 {
     public partial class F2 : Form
@@ -16,8 +17,11 @@ namespace Tubes2Stima
         private Graph G;
         private Microsoft.Msagl.GraphViewerGdi.GViewer viewer;
         private List<Node> path = new List<Node>();
+        private List<Node> lastPath = new List<Node>();
         private List<Command> LC;
         private Dictionary<Tuple<int,int>,Microsoft.Msagl.Drawing.Edge> dictEdge;
+        private System.Windows.Forms.Timer timerAnim;
+        private bool isAnim = false;
 
         public F2(ref Graph _G, ref List<Command> _LC)
         {
@@ -95,176 +99,205 @@ namespace Tubes2Stima
             }
         }
 
-        private void show_path_input_Click(object sender, EventArgs e)
+        private void reset_color_path()
         {
-            if (query_input_list.SelectedItem != null)
+            //Ganti semua shape path hasil query sebelumnya jadi normal lagi
+            for (int i = 0; i < lastPath.Count; i++)
             {
-                string selectedQuery = (string)query_input_list.SelectedItem;
-                String[] tuple = selectedQuery.Split(' ');
-                int type = int.Parse(tuple[0]);
-                int to = int.Parse(tuple[1])-1;
-                int from = int.Parse(tuple[2])-1;
-                //Ganti semua shape path hasil query sebelumnya jadi normal lagi
-                for (int i = 0; i < path.Count; i++)
+                Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(lastPath[i].getID().ToString());
+                tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box;
+                tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Transparent;
+                if (i < lastPath.Count - 1)
                 {
-                    Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
-                    tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box;
-                    tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Transparent;
-                    if (i < path.Count - 1)
+                    Tuple<int, int> key = new Tuple<int, int>(lastPath[i].getID() - 1, lastPath[i + 1].getID() - 1);
+                    Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                    if (dictEdge.ContainsKey(key))
                     {
-                        Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
-                        Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
-                        if (dictEdge.ContainsKey(key))
-                        {
-                            dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
-                        }
-                        else
+                        dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                    }
+                    else
+                    {
+                        if (dictEdge.ContainsKey(keyInv))
                         {
                             dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
                         }
                     }
                 }
-                path.Clear();
-                Algorithm al = new Algorithm();
-                G.generateWeight(G.getNode(0), 0);
-                G.unvisitAll();
-                Boolean found = false;
-                try
+            }
+            lastPath.Clear();
+            this.Refresh();
+        }
+
+        private void show_path_animate(object sender, EventArgs e)
+        {
+            if (isAnim && path.Count > 0)
+            {
+                Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[0].getID().ToString());
+                tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
+                tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
+                if (path.Count > 1)
                 {
-                    int stackSize = 1024 * 1024 * 15;
-                    Thread t = new Thread(() => { found = al.SearchPath(type, G.getNode(to), G.getNode(from), path); }, stackSize);
-                    t.Start();
-                    t.Join();
-                }
-                catch
-                {
-                    MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                if (found)
-                {
-                    for (int i = 0; i < path.Count; i++)
+                    Tuple<int, int> key = new Tuple<int, int>(path[0].getID() - 1, path[1].getID() - 1);
+                    Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
+                    if (dictEdge.ContainsKey(key))
                     {
-                        Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
-                        tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
-                        tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
-                        if (i < path.Count - 1)
+                        dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                    }
+                    else
+                    {
+                        if (dictEdge.ContainsKey(keyInv))
                         {
-                            Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
-                            Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
-                            if (dictEdge.ContainsKey(key))
-                            {
-                                dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                            }
-                            else
-                            {
-                                dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                            }
+                            dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
                         }
                     }
+                    path.RemoveAt(0);
                 }
                 else
                 {
-                    MessageBox.Show("Tidak ada jalur ditemukan", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    path.Clear();
+                    isAnim = false;
                 }
-                Microsoft.Msagl.Drawing.Node nodeRaja = viewer.Graph.FindNode("1");
-                if (nodeRaja != null)
-                {
-                    nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
-                    nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Fuchsia;
-                }
-                
-                G.unvisitAll();
-                this.Refresh();
+            }
+            this.Refresh();
+        }
+
+        private void show_path_input_Click(object sender, EventArgs e)
+        {
+            if (isAnim)
+            {
+                MessageBox.Show("Sedang menganimasikan path", "Error Show Path", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                MessageBox.Show("Pilih dahulu query dari list", "Error show path",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (query_input_list.SelectedItem != null)
+                {
+                    isAnim = false;
+                    string selectedQuery = (string)query_input_list.SelectedItem;
+                    String[] tuple = selectedQuery.Split(' ');
+                    int type = int.Parse(tuple[0]);
+                    int to = int.Parse(tuple[1]) - 1;
+                    int from = int.Parse(tuple[2]) - 1;
+                    reset_color_path();
+                    Algorithm al = new Algorithm();
+                    G.generateWeight(G.getNode(0), 0);
+                    G.unvisitAll();
+                    Boolean found = false;
+                    try
+                    {
+                        int stackSize = 1024 * 1024 * 15;
+                        Thread t = new Thread(() =>
+                        {
+                            found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                            lastPath.Clear();
+                            foreach (Node N in path)
+                            {
+                                lastPath.Add(N);
+                            }
+                            path.Reverse();
+                        }, stackSize);
+                        t.Start();
+                        t.Join();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    if (found)
+                    {
+                        isAnim = true;
+                        timerAnim = new System.Windows.Forms.Timer();
+                        timerAnim.Tick += new EventHandler(show_path_animate);
+                        timerAnim.Interval = 6000 / path.Count; // in miliseconds
+                        timerAnim.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Tidak ada jalur ditemukan", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    Microsoft.Msagl.Drawing.Node nodeRaja = viewer.Graph.FindNode("1");
+                    if (nodeRaja != null)
+                    {
+                        nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
+                        nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Fuchsia;
+                    }
+
+                    G.unvisitAll();
+                    this.Refresh();
+                }
+                else
+                {
+                    MessageBox.Show("Pilih dahulu query dari list", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void show_path_file_Click(object sender, EventArgs e)
         {
-            if (query_file_list.SelectedItem != null)
+            if (isAnim)
             {
-                string selectedQuery = (string)query_file_list.SelectedItem;
-                String[] tuple = selectedQuery.Split(' ');
-                int type = int.Parse(tuple[0]);
-                int to = int.Parse(tuple[1]) - 1;
-                int from = int.Parse(tuple[2]) - 1;
-                //Ganti semua shape path hasil query sebelumnya jadi normal lagi
-                for (int i = 0; i < path.Count; i++)
-                {
-                    Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
-                    tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box;
-                    tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Transparent;
-                    if (i < path.Count - 1)
-                    {
-                        Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
-                        Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
-                        if (dictEdge.ContainsKey(key))
-                        {
-                            dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
-                        }
-                        else
-                        {
-                            dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
-                        }
-                    }
-                }
-                path.Clear();
-                Algorithm al = new Algorithm();
-                G.generateWeight(G.getNode(0), 0);
-                G.unvisitAll();
-                Boolean found = false;
-                try
-                {
-                    int stackSize = 1024 * 1024 * 15;
-                    Thread t = new Thread(() =>{found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);}, stackSize);
-                    t.Start();
-                    t.Join();
-                }
-                catch
-                {
-                    MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                if (found)
-                {
-                    for (int i = 0; i < path.Count; i++)
-                    {
-                        Microsoft.Msagl.Drawing.Node tempNode = viewer.Graph.FindNode(path[i].getID().ToString());
-                        tempNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
-                        tempNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Cyan;
-                        if (i < path.Count - 1)
-                        {
-                            Tuple<int, int> key = new Tuple<int, int>(path[i].getID() - 1, path[i + 1].getID() - 1);
-                            Tuple<int, int> keyInv = new Tuple<int, int>(key.Item2, key.Item1);
-                            if (dictEdge.ContainsKey(key))
-                            {
-                                dictEdge[key].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                            }
-                            else
-                            {
-                                dictEdge[keyInv].Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Tidak ada jalur ditemukan", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                Microsoft.Msagl.Drawing.Node nodeRaja = viewer.Graph.FindNode("1");
-                if (nodeRaja != null)
-                {
-                    nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
-                    nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.LightBlue;
-                }
-                G.unvisitAll();
-                this.Refresh();
+                MessageBox.Show("Sedang menganimasikan path", "Error Show Path", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                MessageBox.Show("Pilih dahulu query dari list", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (query_file_list.SelectedItem != null)
+                {
+                    isAnim = false;
+                    string selectedQuery = (string)query_file_list.SelectedItem;
+                    String[] tuple = selectedQuery.Split(' ');
+                    int type = int.Parse(tuple[0]);
+                    int to = int.Parse(tuple[1]) - 1;
+                    int from = int.Parse(tuple[2]) - 1;
+                    //Ganti semua shape path hasil query sebelumnya jadi normal lagi
+                    reset_color_path();
+                    Algorithm al = new Algorithm();
+                    G.generateWeight(G.getNode(0), 0);
+                    G.unvisitAll();
+                    Boolean found = false;
+                    try
+                    {
+                        int stackSize = 1024 * 1024 * 15;
+                        Thread t = new Thread(() =>
+                        {
+                            found = al.SearchPath(type, G.getNode(to), G.getNode(from), path);
+                            lastPath.Clear();
+                            foreach (Node N in path)
+                            {
+                                lastPath.Add(N);
+                            }
+                            path.Reverse();
+                        }, stackSize);
+                        t.Start();
+                        t.Join();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Node pada command lebih besar dari node yang ada", "Error Invalid Command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    if (found)
+                    {
+                        isAnim = true;
+                        timerAnim = new System.Windows.Forms.Timer();
+                        timerAnim.Tick += new EventHandler(show_path_animate);
+                        timerAnim.Interval = 6000 / path.Count; // in miliseconds
+                        timerAnim.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Tidak ada jalur ditemukan", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    Microsoft.Msagl.Drawing.Node nodeRaja = viewer.Graph.FindNode("1");
+                    if (nodeRaja != null)
+                    {
+                        nodeRaja.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Circle;
+                        nodeRaja.Attr.FillColor = Microsoft.Msagl.Drawing.Color.LightBlue;
+                    }
+                    G.unvisitAll();
+                    this.Refresh();
+                }
+                else
+                {
+                    MessageBox.Show("Pilih dahulu query dari list", "Error show path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

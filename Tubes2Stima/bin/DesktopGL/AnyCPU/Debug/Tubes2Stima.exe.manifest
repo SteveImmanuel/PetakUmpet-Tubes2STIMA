@@ -115,18 +115,6 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MonoGame.Framework.dll" size="1489920">
-      <assemblyIdentity name="MonoGame.Framework" version="3.7.1.189" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>RI1AhmmXwBxHjVvoI8dSQlMkruY5+doyl8CoVW36rTQ=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tubes2Stima.exe" size="583640">
       <assemblyIdentity name="Tubes2Stima" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -134,7 +122,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>7J8nLwcgCUl/0NT/niSTKu51lR2Bo+/FG88vnkCPEO4=</dsig:DigestValue>
+        <dsig:DigestValue>u/YkUO1Wojl57WOm7cAY6Cjn7lzCdLYTTvhPJko0IFM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

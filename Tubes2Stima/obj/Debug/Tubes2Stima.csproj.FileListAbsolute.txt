@@ -35,7 +35,6 @@ C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopG
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\MonoGame.Framework.dll.config
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Tubes2Stima.exe
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Tubes2Stima.pdb
-C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\MonoGame.Framework.dll
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\obj\Debug\Tubes2Stima.csproj.CopyComplete
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Tubes2Stima.exe.manifest
 C:\Users\Aditya\Documents\GitHub\PetakUmpet-Tubes2STIMA\Tubes2Stima\bin\DesktopGL\AnyCPU\Debug\Tubes2Stima.application
